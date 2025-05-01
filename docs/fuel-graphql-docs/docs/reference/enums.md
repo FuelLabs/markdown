@@ -1,0 +1,144 @@
+
+# Enums
+
+## `BlockVersion`
+
+The version of the block.
+
+`V1`:
+Version 1.
+
+## `ConsensusParametersVersion`
+
+The version of the consensus parameters.
+
+`V1`:
+Version 1.
+
+## `ContractParametersVersion`
+
+The version of the contract-specific consensus parameters.
+
+`V1`:
+Version 1.
+
+## `FeeParametersVersion`
+
+The version of the fee-specific consensus parameters.
+
+`V1`:
+Version 1.
+
+## `GasCostsVersion`
+
+The version of the gas-specific consensus parameters.
+
+`V1`:
+Version 1.
+
+## `HeaderVersion`
+
+The version of the header.
+
+`V1`:
+Version 1.
+
+## `MessageState`
+
+The state of a message, either `UNSPENT`, `SPENT`, or `NOT_FOUND`.
+
+`UNSPENT`:
+The message is unspent.
+
+`SPENT`:
+The message is spent.
+
+`NOT_FOUND`:
+The message was not found.
+
+## `ReceiptType`
+
+The receipt type indicating what kind of transaction generated the receipt.
+
+`CALL`:
+The receipt was generated from a contract call.
+
+`RETURN`:
+The receipt was generated from a transaction that returned without data.
+
+`RETURN_DATA`:
+The receipt was generated from a transaction that returned data.
+
+`PANIC`:
+The receipt was generated from a failed contract call that panicked.
+
+`REVERT`:
+The receipt was generated from a failed contract call that reverted.
+
+`LOG`:
+The receipt was generated from a log in the contract. The Log receipt is generated for non-reference types, namely `bool`, `u8`, `u16`, `u32`, and `u64`.
+
+`LOG_DATA`:
+The receipt was generated from a log in the contract. `LogData` is generated for reference types which include all types except for the non_reference types mentioned above.
+
+`TRANSFER`:
+The receipt was generated from a transaction that transferred coins to a contract.
+
+`TRANSFER_OUT`:
+The receipt was generated from a transaction that transferred coins to an address (rather than a contract).
+
+`SCRIPT_RESULT`:
+The receipt was generated from a script.
+
+`MESSAGE_OUT`:
+The receipt was generated from a message.
+
+`MINT`:
+The receipt was generated from a mint.
+
+`BURN`:
+The receipt was generated from a burn.
+
+## `PredicateParametersVersion`
+
+The version of the predicate-specific consensus parameters.
+
+`V1`:
+Version 1.
+
+## `ReturnType`
+
+The type of return response for a transaction
+
+`RETURN`:
+Indicates the transaction returned without any data.
+
+`RETURN_DATA`:
+Indicates the transaction returned some data.
+
+`REVERT`:
+Indicates the transaction reverted.
+
+## `RunState`
+
+The state of a [`RunResult`](/docs/reference/objects/#runresult).
+
+`COMPLETED`:
+All breakpoints have been processed, and the program has terminated.
+
+`BREAKPOINT`:
+The program stopped on a breakpoint.
+
+## `ScriptParametersVersion`
+
+The version of the script-specific consensus parameters.
+
+`V1`:
+Version 1.
+
+## `TxParametersVersion`
+
+The version of the transaction-specific consensus parameters.
+
+`V1`:
+Version 1.

@@ -1,0 +1,278 @@
+
+# Queries
+
+## `balance`
+
+Returns the [`Balance!`](/docs/reference/objects/#balance) of a specific address for a given asset id.
+
+**args:**
+
+`owner`: [`Address!`](/docs/reference/scalars/#address)
+
+The owner address.
+
+`assetId`: [`AssetId!`](/docs/reference/scalars/#assetid)
+
+The asset id.
+
+## `balances`
+
+Returns a [`BalanceConnection!`](/docs/reference/objects/#balance) for an array of balances for each asset owned by a given address.
+
+**args:**
+
+`filter`: [`BalanceFilterInput!`](/docs/reference/objects/#balancefilterinput)
+
+A filter to specify the wallet owner address.
+
+## `blob`
+
+Returns information about a certain [`Blob`](/docs/reference/objects/#blob).
+
+**args:**
+
+`id`: [`BlobId`](/docs/reference/scalars/#blobid)
+
+The transaction identifier for the blob.
+
+## `block`
+
+Returns information about a certain [`Block`](/docs/reference/objects/#block). Accepts either the block id or block height as an argument.
+
+**args:**
+
+`id`: [`BlockId`](/docs/reference/scalars/#blockid)
+
+The block id.
+
+`height`: [`U64`](/docs/reference/scalars/#u64)
+
+The block height.
+
+## `blocks`
+
+Returns a [`BlockConnection!`](/docs/reference/objects/#block) for an array of all blocks produced.
+
+## `chain`
+
+Returns [`ChainInfo!`](/docs/reference/objects/#chaininfo) about the target Fuel network used for the API.
+
+## `coin`
+
+Returns details about a specific [`Coin`](/docs/reference/objects/#coin).
+
+**args:**
+
+`utxoId`: [`UtxoId!`](/docs/reference/scalars/#utxoid)
+
+A unique 32 byte identifier for the UTXO.
+
+## `coins`
+
+Returns a [`CoinConnection!`](/docs/reference/objects/#coin) for an array of coins based on a given owner and/or asset id
+
+**args:**
+
+`filter`: [`CoinFilterInput!`](/docs/reference/objects/#coinfilterinput)
+
+A filter with the owner address and optionally the asset id.
+
+## `coinsToSpend`
+
+Returns an array of spendable [`[[CoinType!]!]!`](/docs/reference/unions/#cointype) per asset.
+
+**args:**
+
+`owner`: [`Address`](/docs/reference/scalars/#address)
+
+The owner address of the coins.
+
+`queryPerAsset`: [`[SpendQueryElementInput!]!`](/docs/reference/objects/#spendqueryelementinput)
+
+The list of requested asset resources. Several entries with the same asset id are not allowed.
+
+`excludedIds`: [`ExcludeInput`](/docs/reference/objects/#excludeinput)
+
+The resources to exclude.
+
+## `consensusParameters`
+
+Returns the [`ConsensusParameters`](/docs/reference/objects/#consensusparameters) for a given version.
+
+**args:**
+
+`version`: `Int!`
+
+The version of the consensus parameters.
+
+## `contract`
+
+Returns the [`Contract`](/docs/reference/objects/#contract) information for a given contract id.
+
+**args:**
+
+`id`: [`ContractId!`](/docs/reference/scalars/#contractid)
+
+The contract id of the requested contract.
+
+## `contractBalance`
+
+Returns the [`ContractBalance!`](/docs/reference/objects/#contractbalance) for a given contract and asset id.
+
+**args:**
+
+`contract`: [`ContractId!`](/docs/reference/scalars/#contractid)
+
+The contract that owns the balance.
+
+`asset`: [`AssetId!`](/docs/reference/scalars/#assetid)
+
+The asset id for the balance.
+
+## `contractBalances`
+
+Returns a [`ContractBalanceConnection!`](/docs/reference/objects/#contractbalance) for an array of balances for all assets owned by a given contract
+
+**args:**
+
+`filter`: [`ContractBalanceFilterInput!`](/docs/reference/objects/#contractbalancefilterinput)
+
+A filter for the contract balances.
+
+## `estimateGasPrice`
+
+Estimates the most expensive the gas price over a given block horizon, and returns [`EstimateGasPrice!`](/docs/reference/objects/#estimategasprice).
+
+**args:**
+
+`blockHorizon`: [`U32!`](/docs/reference/scalars/#u32)
+
+The block horizon defines how many blocks in the future you are doing an estimate for.
+
+## `estimatePredicates`
+
+Estimate the predicate gas and returns a [`Transaction!`](/docs/reference/objects/#transaction).
+
+**args:**
+
+`tx`: [`HexString!`](/docs/reference/scalars/#hexstring)
+
+The transaction hex string.
+
+## `health`
+
+Returns `true` if the API is running or `false` if the API is down.
+
+## `latestGasPrice`
+
+Returns the [`LatestGasPrice!`](/docs/reference/objects/#latestgasprice) of the latest block.
+
+## `message`
+
+Returns the [`Message`](/docs/reference/objects/#message) for a given message nonce.
+
+**args:**
+
+`nonce`: [`Nonce!`](/docs/reference/scalars/#nonce)
+
+The message nonce.
+
+## `messageProof`
+
+Returns the [`MessageProof`](/docs/reference/objects/#messageproof) for a given message id or transaction.
+
+**args:**
+
+`transactionId`: [`TransactionId!`](/docs/reference/scalars/#transactionid)
+
+The transaction id for the message.
+
+`nonce`: [`Nonce`](/docs/reference/scalars/#nonce)
+
+The message nonce.
+
+`commitBlockId`: [`BlockId`](/docs/reference/scalars/#blockid)
+
+The block id.
+
+`commitBlockHeight`: [`U32`](/docs/reference/scalars/#u32)
+
+The block height.
+
+## `messages`
+
+Returns a [`MessageConnection!`](/docs/reference/objects/#message) for an array of messages for a given owner.
+
+**args:**
+
+`owner`: [`Address`](/docs/reference/scalars/#address)
+
+The owner address of the messages.
+
+## `messageStatus`
+
+Returns the [`MessageStatus`](/docs/reference/objects/#messagestatus) for a given message [`Nonce`](/docs/reference/scalars/#nonce).
+
+**args:**
+
+`nonce`: [`Nonce`](/docs/reference/scalars/#nonce)
+
+The nonce of the message.
+
+## `nodeInfo`
+
+Returns [`NodeInfo!`](/docs/reference/objects/#nodeinfo) about the current node.
+
+## `relayedTransactionStatus`
+
+Returns [`RelayedTransactionStatus`](/docs/reference/unions/#relayedtransactionstatus) details for a given relayed transaction id.
+
+**args:**
+
+`id`: [`RelayedTransactionId!`](/docs/reference/scalars/#relayedtransactionid)
+
+The ID for the relayed transaction.
+
+## `stateTransitionBytecodeByVersion`
+
+Returns [`StateTransitionBytecode`](/docs/reference/objects/#statetransitionbytecode) details for a given version.
+
+**args:**
+
+`version`: `Int!`
+
+The version of the state transition function..
+
+## `stateTransitionBytecodeByRoot`
+
+Returns [`StateTransitionBytecode`](/docs/reference/objects/#statetransitionbytecode) details for a given root.
+
+**args:**
+
+`root`: [`[HexString!]`](/docs/reference/scalars/#hexstring)
+
+The merkle root of the state transition bytecode.
+
+## `transaction`
+
+Returns [`Transaction`](/docs/reference/objects/#transaction) details for a given transaction id.
+
+**args:**
+
+`id`: [`TransactionId!`](/docs/reference/scalars/#transactionid)
+
+The ID for the transaction.
+
+## `transactions`
+
+Returns a [`TransactionConnection!`](/docs/reference/objects/#transaction) for an array of all transactions.
+
+## `transactionsByOwner`
+
+Returns a [`TransactionConnection!`](/docs/reference/objects/#transaction) for an array of all transactions from a given address.
+
+**args:**
+
+`owner`: [`Address!`](/docs/reference/scalars/#address)
+
+The owner address of the transactions.

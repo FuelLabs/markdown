@@ -1,0 +1,6 @@
+
+# How To Use GraphQL
+
+This section covers the fundamentals for how to use a GraphQL API.
+
+For further documentation and resources about GraphQL, check out the official GraphQL Documentation at [graphql.org](https://graphql.org/).
