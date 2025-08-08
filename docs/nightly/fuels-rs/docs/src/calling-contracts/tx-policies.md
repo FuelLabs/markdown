@@ -32,7 +32,7 @@ You can configure these parameters by creating an instance of `TxPolicies` and p
 <!-- tx_policies:example:end-->
 
 ```rust,ignore
-        let contract_methods = MyContract::new(contract_id.clone(), wallet.clone()).methods();
+        let contract_methods = MyContract::new(contract_id, wallet.clone()).methods();
 
         let tx_policies = TxPolicies::default()
             .with_tip(1)

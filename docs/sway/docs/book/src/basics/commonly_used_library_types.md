@@ -6,7 +6,7 @@ The Sway Standard Library is the foundation of portable Sway software, a set of 
 
 <!-- This section should explain what the `Result` type is -->
 <!-- result:example:start -->
-Type `Result` is the type used for returning and propagating errors. It is an `enum` with two variants: `Ok(T)`, representing success and containing a value, and `Err(E)`, representing error and containing an error value. The `T` and `E` in this definition are type parameters, allowing `Result` to be generic and to be used with any types.
+Type `Result` is the type used for returning and propagating recoverable errors. It is an `enum` with two variants: `Ok(T)`, representing success and containing a value, and `Err(E)`, representing error and containing an error value. The `T` and `E` in this definition are type parameters, allowing `Result` to be generic and to be used with any types.
 <!-- result:example:end -->
 
 ```sway
@@ -50,6 +50,8 @@ fn main() -> Result<u64, str[4]> {
 }
 
 ```
+
+To learn more about expressing irrecoverable errors in Sway, see the chapter on [Error Handling](error_handling.md).
 
 ## `Option<T>`
 

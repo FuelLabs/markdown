@@ -33,7 +33,6 @@ We transfer only a part of the base asset balance so that the rest can cover tra
         let mut outputs = vec![];
         for (id_string, amount) in balances {
             let id = AssetId::from_str(&id_string)?;
-            let amount = amount as u64;
 
             let input = wallet_1
                 .get_asset_inputs_for_amount(id, amount, None)
@@ -42,9 +41,9 @@ We transfer only a part of the base asset balance so that the rest can cover tra
 
             // we don't transfer the full base asset so we can cover fees
             let output = if id == *consensus_parameters.base_asset_id() {
-                wallet_1.get_asset_outputs_for_amount(wallet_2.address(), id, amount / 2)
+                wallet_1.get_asset_outputs_for_amount(wallet_2.address(), id, (amount / 2) as u64)
             } else {
-                wallet_1.get_asset_outputs_for_amount(wallet_2.address(), id, amount)
+                wallet_1.get_asset_outputs_for_amount(wallet_2.address(), id, amount as u64)
             };
 
             outputs.extend(output);

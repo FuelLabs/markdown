@@ -5,11 +5,11 @@
 A smart contract is no different than a script or predicate in that it is a piece of bytecode that is deployed to the blockchain via a [transaction](https://fuellabs.github.io/fuel-specs/master/protocol/tx_format). The main features of a smart contract that differentiate it from scripts or predicates are that it is _callable_ and _stateful_. Put another way, a smart contract is analogous to a deployed API with some database state.
 <!-- contract:example:end -->
 
-The interface of a smart contract, also just called a contract, must be defined strictly with an [ABI declaration](#the-abi-declaration). See [this contract](../examples/wallet_smart_contract.md) for an example.
+The interface of a smart contract, also just called a contract, can be explicitly defined with an [ABI declaration](#the-abi-declaration) or implicitly with an [impl Self](#impl-self-contracts) item for the special type "Contract". See [this contract](../examples/wallet_smart_contract.md) for an example on using ABIs.
 
 ## Syntax of a Smart Contract
 
-As with any Sway program, the program starts with a declaration of what [program type](./index.md) it is. A contract must also either define or import an [ABI declaration](#the-abi-declaration) and implement it.
+As with any Sway program, the program starts with a declaration of what [program type](./index.md) it is. When using ABIs, a contract must either define or import an [ABI declaration](#the-abi-declaration) and implement it.
 
 <!-- This section should explain best practices for ABIs -->
 <!-- ABI:example:start -->
@@ -177,3 +177,58 @@ Each special parameter is optional and assumes a default value when skipped:
 1. The default value for `gas` is the context gas (i.e. the content of the special register `$cgas`). Refer to the [FuelVM specifications](https://fuellabs.github.io/fuel-specs/master/vm) for more information about context gas.
 2. The default value for `coins` is 0.
 3. The default value for `asset_id` is `b256::zero()`.
+
+## Impl Self Contracts
+
+In some cases, it may be more convenient to avoid declaring an ABI and implement the contract directly, as shown in the example below.
+
+Notice how there is no ABI specified in the `impl` item. In this case, the compiler will automatically create an ABI named as the package containing this `impl Contract` item, and will include each function in the ABI.
+
+```sway
+impl Contract {
+    #[storage(read, write), payable]
+    fn receive_funds() {
+        if msg_asset_id() == AssetId::base() {
+            // If we received the base asset then keep track of the balance.
+            // Otherwise, we're receiving other native assets and don't care
+            // about our balance of coins.
+            storage.balance.write(storage.balance.read() + msg_amount());
+        }
+    }
+
+    #[storage(read, write)]
+    fn send_funds(amount_to_send: u64, recipient_address: Address) {
+        let sender = msg_sender().unwrap();
+        match sender {
+            Identity::Address(addr) => assert(addr == OWNER_ADDRESS),
+            _ => revert(0),
+        };
+
+        let current_balance = storage.balance.read();
+        assert(current_balance >= amount_to_send);
+
+        storage.balance.write(current_balance - amount_to_send);
+
+        // Note: `transfer()` is not a call and thus not an
+        // interaction. Regardless, this code conforms to
+        // checks-effects-interactions to avoid re-entrancy.
+        transfer(
+            Identity::Address(recipient_address),
+            AssetId::base(),
+            amount_to_send,
+        );
+    }
+}
+```
+
+Without an ABI, there is no way for scripts and other contracts to use `abi(...)` and call this contract, but it can still be tested and called using any of available SDKs, as any other contract.
+
+The ABI name will be the "upper camel case" version of the package name containing the "impl Contract" item. `CONTRACT_ID` is a compiler special constant that references the contract being implemented in this file.
+
+```sway
+#[test]
+fn tests() {
+    let w = abi(WalletSmartContractSelfImpl, CONTRACT_ID);
+    w.receive_funds();
+}
+```

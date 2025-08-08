@@ -1,6 +1,6 @@
 # Preparing a Script Transaction
 
-Akin to Contracts, we can configure the [call parameters](../contracts/call-parameters.md) and [transaction parameters](../transactions/adding-parameters.md) for Scripts, as well as retrieve the entire transaction request or transaction ID prior to submission.
+Akin to Contracts, we can configure the [call parameters](../contracts/call-parameters.md) and [transaction parameters](../transactions/adding-parameters.md) for Scripts, as well as retrieve the entire transaction request prior to submission.
 
 ```
 const myMainScript = new Script(ScriptSum.bytecode, ScriptSum.abi, wallet);
@@ -14,7 +14,8 @@ tx.callParams({ gasLimit: 7500 });
 const txRequest = await tx.getTransactionRequest();
 
 // Get the transaction ID
-const txId = await tx.getTransactionId();
+const chainId = await provider.getChainId();
+const txId = txRequest.getTransactionId(chainId);
 
 // Retrieve the value of the call and the actual gas used
 const { waitForResult: waitForActualGasUsed } = await tx.call();

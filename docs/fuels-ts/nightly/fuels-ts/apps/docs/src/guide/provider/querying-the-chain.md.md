@@ -85,10 +85,10 @@ const { coins } = await wallet.getCoins(baseAssetId);
 
 ## `getResourcesToSpend`
 
-Returns spendable resources (coins or messages) for a transaction request. It accepts an optional third parameter, `excludedIds`, to exclude specific UTXO IDs or coin message nonces:
+Returns spendable resources (coins or messages) for a transaction request. It accepts an optional third parameter, `resourcesIdsToIgnore`, to exclude specific UTXO IDs or coin message nonces:
 
 ```
-import type { CoinQuantityLike, ExcludeResourcesOption } from 'fuels';
+import type { CoinQuantityLike, ResourcesIdsToIgnore } from 'fuels';
 import { Provider, ScriptTransactionRequest, Wallet } from 'fuels';
 
 import { LOCAL_NETWORK_URL, WALLET_PVT_KEY } from '../../../../env';
@@ -109,7 +109,7 @@ const utxoId =
   '0x00000000000000000000000000000000000000000000000000000000000000010001';
 const messageNonce =
   '0x381de90750098776c71544527fd253412908dec3d07ce9a7367bd1ba975908a0';
-const excludedIds: ExcludeResourcesOption = {
+const excludedIds: ResourcesIdsToIgnore = {
   utxos: [utxoId],
   messages: [messageNonce],
 };
@@ -127,7 +127,7 @@ tx.addResources(spendableResources);
 This method is also available in the `Account` class and can be used without providing the `address`:
 
 ```
-import type { CoinQuantityLike, ExcludeResourcesOption } from 'fuels';
+import type { CoinQuantityLike, ResourcesIdsToIgnore } from 'fuels';
 import { Provider, ScriptTransactionRequest, Wallet } from 'fuels';
 
 import { LOCAL_NETWORK_URL, WALLET_PVT_KEY } from '../../../../env';
@@ -148,7 +148,7 @@ const utxoId =
   '0x00000000000000000000000000000000000000000000000000000000000000010001';
 const messageNonce =
   '0x381de90750098776c71544527fd253412908dec3d07ce9a7367bd1ba975908a0';
-const excludedIds: ExcludeResourcesOption = {
+const excludedIds: ResourcesIdsToIgnore = {
   utxos: [utxoId],
   messages: [messageNonce],
 };

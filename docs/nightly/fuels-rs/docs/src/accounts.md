@@ -68,7 +68,7 @@ You can transfer assets to a contract via `wallet.force_transfer_to_contract`.
         let amount = 300;
         let asset_id = random_asset_id;
         let _res = wallet
-            .force_transfer_to_contract(&contract_id, amount, asset_id, TxPolicies::default())
+            .force_transfer_to_contract(contract_id, amount, asset_id, TxPolicies::default())
             .await?;
 
         // Check that the contract now has 1 coin.
@@ -101,11 +101,10 @@ For transferring assets to the base layer chain, you can use `wallet.withdraw_to
         let base_layer_address = Address::from_str(
             "0x4710162c2e3a95a6faff05139150017c9e38e5e280432d546fae345d6ce6d8fe",
         )?;
-        let base_layer_address = Bech32Address::from(base_layer_address);
 
         // Transfer an amount of 1000 to the specified base layer address.
         let response = wallet
-            .withdraw_to_base_layer(&base_layer_address, amount, TxPolicies::default())
+            .withdraw_to_base_layer(base_layer_address, amount, TxPolicies::default())
             .await?;
 
         let _block_height = wallet.provider().produce_blocks(1, None).await?;
@@ -121,4 +120,4 @@ For transferring assets to the base layer chain, you can use `wallet.withdraw_to
         assert_eq!(proof.recipient, base_layer_address);
 ```
 
-The above example creates an `Address` from a string and converts it to a `Bech32Address`. Next, it calls `wallet.withdraw_to_base_layer` by providing the address, the amount to be transferred, and the transaction policies. Lastly, to verify that the transfer succeeded, the relevant message proof is retrieved with `provider.get_message_proof,` and the amount and the recipient are verified.
+The above example creates an `Address` from a string. Next, it calls `wallet.withdraw_to_base_layer` by providing the address, the amount to be transferred, and the transaction policies. Lastly, to verify that the transfer succeeded, the relevant message proof is retrieved with `provider.get_message_proof,` and the amount and the recipient are verified.

@@ -7,7 +7,7 @@ In the Fuel network, each UTXO corresponds to a unique _coin_, and said _coin_ h
 
 ```rust,ignore
         let asset_id = AssetId::zeroed();
-        let balance: u64 = wallet.get_asset_balance(&asset_id).await?;
+        let balance: u128 = wallet.get_asset_balance(&asset_id).await?;
 ```
 
 <!-- This section should explain getting all of the balances of a wallet -->

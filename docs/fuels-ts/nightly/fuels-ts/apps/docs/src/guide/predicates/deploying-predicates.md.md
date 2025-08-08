@@ -35,6 +35,7 @@ const baseAssetId = await provider.getBaseAssetId();
 // We can deploy dynamically or via `fuels deploy`
 const originalPredicate = new ConfigurablePin({
   provider,
+  data: [1337],
 });
 
 const { waitForResult: waitForDeploy } = await originalPredicate.deploy(wallet);

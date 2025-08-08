@@ -32,9 +32,9 @@ Next, we can define some values for the consensus parameters:
 Before we can start a node, we probably also want to define some genesis coins and assign them to an address:
 
 ```rust,ignore
-        let wallet = WalletUnlocked::new_random(None);
+        let signer = PrivateKeySigner::random(&mut thread_rng());
         let coins = setup_single_asset_coins(
-            wallet.address(),
+            signer.address(),
             Default::default(),
             DEFAULT_NUM_COINS,
             DEFAULT_COIN_AMOUNT,

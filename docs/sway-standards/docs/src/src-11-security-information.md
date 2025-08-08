@@ -114,7 +114,7 @@ A basic implementation of the security information standard demonstrating how to
 ```sway
 contract;
 
-use standards::src11::{SecurityInformation, SRC11};
+use src11::{SecurityInformation, SRC11};
 
 use std::{string::String, vec::Vec};
 
@@ -206,7 +206,7 @@ A basic implementation of the security information standard demonstrating how to
 ```sway
 contract;
 
-use standards::src11::{SecurityInformation, SRC11};
+use src11::{SecurityInformation, SRC11};
 
 use std::{storage::{storage_string::*, storage_vec::*}, string::String, vec::Vec};
 

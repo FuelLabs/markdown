@@ -76,38 +76,34 @@ transactionRequest.addCoinOutput(recipient2.address, 500, assetA);
 
 ### Estimating and Funding the Transaction Request
 
-Before submitting a transaction, it is essential to ensure it is properly funded to meet its requirements and cover the associated fee. The SDK offers two approaches for this, one is to use the `estimateAndFund` helper:
+Before submitting a transaction, ensure it is fully funded to meet its requirements and cover the associated fees. The `assembleTx` method handles this by returning a fully funded and estimated transaction, ready for submission.
 
 ```
-const transactionRequest = new ScriptTransactionRequest({
+const transferAmount = 1000;
+
+const request = new ScriptTransactionRequest({
   script: ScriptSum.bytecode,
 });
 
-await transactionRequest.estimateAndFund(wallet);
+const baseAssetId = await provider.getBaseAssetId();
 
-await wallet.sendTransaction(transactionRequest);
-```
+request.addCoinOutput(wallet.address, transferAmount, baseAssetId);
 
-This approach provides a simple one-liner for estimating and funding the transaction request. Ensuring that the `gasLimit` and `maxFee` are accurately calculated and that the required amounts for `OutputCoin`s are fulfilled, as well as fetching and adding any missing resources from the calling account.
-
-The other more manual approach is as so:
-
-```
-const transactionRequest = new ScriptTransactionRequest({
-  script: ScriptSum.bytecode,
+const { assembledRequest } = await provider.assembleTx({
+  request,
+  feePayerAccount: wallet,
+  accountCoinQuantities: [
+    {
+      amount: transferAmount,
+      assetId: baseAssetId,
+      account: wallet,
+      changeOutputAccount: wallet,
+    },
+  ],
 });
 
-const cost = await wallet.getTransactionCost(transactionRequest);
-
-transactionRequest.gasLimit = cost.gasUsed;
-transactionRequest.maxFee = cost.maxFee;
-
-await wallet.fund(transactionRequest, cost);
-
-await wallet.sendTransaction(transactionRequest);
+await wallet.sendTransaction(assembledRequest);
 ```
-
-This approach provides the same behaviour as the `estimateAndFund` helper, but gives more granular control over the transaction request. The `getTransactionCost` method also returns various information about the simulated request that you may want to use to further modify the transaction request, more on that can be found in the [API reference](DOCS_API_URL/types/_fuel_ts_account.TransactionCost.html).
 
 ### Manually Fetching Resources
 
@@ -241,7 +237,7 @@ transactionRequest.addWitness(signature);
 await transactionRequest.addAccountWitnesses([accountB]);
 ```
 
-A more complex example of adding multiple witnesses to a transaction request can be seen in the multiple signers guide [here](../cookbook/transactions-with-multiple-signers.md), which validates the signatures inside the script itself.
+A more complex example would when signatures are validated inside the script itself, like this guide [here](../cookbook/sway-script-with-signature-validation.md), .
 
 > **Note**: Once `addAccountWitnesses` has been called, any additional modifications to the transaction request will invalidate the signature as the transaction ID changes. Therefore, it is recommended to add witnesses last.
 
@@ -265,30 +261,41 @@ const transactionId = transactionRequest.getTransactionId(chainId);
 Assets can be burnt as part of a transaction that has inputs without associated output change. The SDK validates against this behavior, so we need to explicitly enable this by sending the transaction with the `enableAssetBurn` option set to `true`.
 
 ```
-const transactionRequest = new ScriptTransactionRequest();
+const baseAssetId = await provider.getBaseAssetId();
+const request = new ScriptTransactionRequest();
 
 const {
   coins: [coin],
 } = await sender.getCoins(ASSET_A);
 
 // Add the coin as an input, without a change output
-transactionRequest.inputs.push({
-  id: coin.id,
-  type: InputType.Coin,
-  owner: coin.owner.toB256(),
-  amount: coin.amount,
-  assetId: coin.assetId,
-  txPointer: '0x00000000000000000000000000000000',
-  witnessIndex:
-    transactionRequest.getCoinInputWitnessIndexByOwner(coin.owner) ??
-    transactionRequest.addEmptyWitness(),
-});
+request.addResource(coin);
+
+/**
+ * Remove the OutputChange for the specific assetId as it is always added by default
+ * when using 'addResource'
+ */
+request.outputs = request.outputs.filter(
+  (output) =>
+    output.type !== OutputType.Change || String(output.assetId) !== ASSET_A
+);
 
 // Fund the transaction
-await transactionRequest.estimateAndFund(sender);
+const { assembledRequest } = await provider.assembleTx({
+  request,
+  feePayerAccount: sender,
+  accountCoinQuantities: [
+    {
+      amount: '0',
+      assetId: baseAssetId,
+      account: sender,
+      changeOutputAccount: sender,
+    },
+  ],
+});
 
 // Send the transaction with asset burn enabled
-const tx = await sender.sendTransaction(transactionRequest, {
+const tx = await sender.sendTransaction(assembledRequest, {
   enableAssetBurn: true,
 });
 ```

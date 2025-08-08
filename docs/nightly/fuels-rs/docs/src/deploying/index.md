@@ -67,7 +67,7 @@ Additionally, you can set custom `TxParameters` when deploying the loaded contra
 ```rust,ignore
         // Optional: Add `Salt`
         let rng = &mut StdRng::seed_from_u64(2322u64);
-        let salt: [u8; 32] = rng.gen();
+        let salt: [u8; 32] = rng.r#gen();
 
         // Optional: Configure storage
         let key = Bytes32::from([1u8; 32]);

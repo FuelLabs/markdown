@@ -5,11 +5,14 @@ With the function `estimate_transaction_cost(tolerance: Option<f64>, block_horiz
 ```rust,ignore
 pub struct TransactionCost {
     pub gas_price: u64,
-    pub gas_used: u64,
     pub metered_bytes_size: u64,
     pub total_fee: u64,
+    pub script_gas: u64,
+    pub total_gas: u64,
 }
 ```
+
+> **Note** `script_gas` refers to the part of the gas spent on the script execution.
 
 Below are examples that show how to get the estimated transaction cost from single and multi call transactions.
 

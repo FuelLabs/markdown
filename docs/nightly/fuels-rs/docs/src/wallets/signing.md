@@ -17,15 +17,20 @@ own, custom ones, that implement `Signer`):
         let signature = signer.sign(message).await?;
 
         // Check if signature is what we expect it to be
-        assert_eq!(signature, Signature::from_str("0x8eeb238db1adea4152644f1cd827b552dfa9ab3f4939718bb45ca476d167c6512a656f4d4c7356bfb9561b14448c230c6e7e4bd781df5ee9e5999faa6495163d")?);
+        assert_eq!(
+            signature,
+            Signature::from_str(
+                "0x8eeb238db1adea4152644f1cd827b552dfa9ab3f4939718bb45ca476d167c6512a656f4d4c7356bfb9561b14448c230c6e7e4bd781df5ee9e5999faa6495163d"
+            )?
+        );
 
-        // Recover address that signed the message
-        let recovered_address = signature.recover(&message)?;
+        // Recover the public key that signed the message
+        let recovered_pub_key: PublicKey = signature.recover(&message)?;
 
-        assert_eq!(signer.address().hash(), recovered_address.hash());
+        assert_eq!(*signer.address, *recovered_pub_key.hash());
 
         // Verify signature
-        signature.verify(&recovered_address, &message)?;
+        signature.verify(&recovered_pub_key, &message)?;
 ```
 
 ## Adding `Signers` to a transaction builder
@@ -47,7 +52,7 @@ Below is a full example of how to create a transaction builder and add signers t
             let input_coin = Input::ResourceSigned {
                 resource: CoinType::Coin(Coin {
                     amount: 10000000,
-                    owner: signer.address().clone(),
+                    owner: signer.address(),
                     ..Default::default()
                 }),
             };
@@ -59,7 +64,7 @@ Below is a full example of how to create a transaction builder and add signers t
                 1,
                 Default::default(),
             );
-            let change = Output::change(signer.address().into(), 0, Default::default());
+            let change = Output::change(signer.address(), 0, Default::default());
 
             ScriptTransactionBuilder::prepare_transfer(
                 vec![input_coin],

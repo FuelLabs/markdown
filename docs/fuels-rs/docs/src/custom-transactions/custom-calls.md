@@ -12,7 +12,7 @@ When preparing a contract call via `CallHandler`, the Rust SDK uses a transactio
         // customize the builder...
 
         wallet.adjust_for_fee(&mut tb, 0).await?;
-        tb.add_signer(wallet.clone())?;
+        wallet.add_witnesses(&mut tb)?;
 
         let tx = tb.build(provider).await?;
 
@@ -21,7 +21,7 @@ When preparing a contract call via `CallHandler`, the Rust SDK uses a transactio
 
         let tx_status = provider.tx_status(&tx_id).await?;
 
-        let response = call_handler.get_response_from(tx_status)?;
+        let response = call_handler.get_response(tx_status)?;
 
         assert_eq!(counter, response.value);
 ```
@@ -36,7 +36,7 @@ When preparing a contract call via `CallHandler`, the Rust SDK uses a transactio
     // customize the builder...
 
     wallet.adjust_for_fee(&mut tb, 0).await?;
-    tb.add_signer(wallet.clone())?;
+    wallet.add_witnesses(&mut tb)?;
 
     let tx = tb.build(provider).await?;
 
@@ -44,7 +44,7 @@ When preparing a contract call via `CallHandler`, the Rust SDK uses a transactio
     tokio::time::sleep(Duration::from_millis(500)).await;
     let tx_status = provider.tx_status(&tx_id).await?;
 
-    let response = script_call_handler.get_response_from(tx_status)?;
+    let response = script_call_handler.get_response(tx_status)?;
 
     assert_eq!(response.value, "hello");
 ```

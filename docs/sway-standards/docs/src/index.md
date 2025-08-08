@@ -7,14 +7,21 @@ Standards in this repository may be in various stages of development. Use of dra
 If you don't find what you're looking for, feel free to create an issue and propose a new standard!
 
 > **Note**
-> All standards currently use `forc v0.67.0`.
+> All standards currently use `forc v0.69.0`.
 
 ## Using a standard
 
-To import a standard the following should be added to the project's `Forc.toml` file under `[dependencies]` with the most recent release:
+To import any standard, a dependency should be added to the project's `Forc.toml` file under `[dependencies]`.
 
-```toml
-standards = { git = "https://github.com/FuelLabs/sway-standards", tag = "v0.7.0" }
+```sway
+[dependencies]
+example = "0.0.0"
+```
+
+The standard you wish to use may be added as a dependency with the `forc add` command. For example, to import the SRC-20 Standard, use the following `forc` command:
+
+```bash
+forc add src20@0.8.0
 ```
 
 > **NOTE:**
@@ -23,13 +30,13 @@ standards = { git = "https://github.com/FuelLabs/sway-standards", tag = "v0.7.0"
 You may then import your desired standard in your Sway Smart Contract as so:
 
 ```sway
-use standards::<standard>::<standard_abi>;
+use <standard>::<standard_abi>;
 ```
 
 For example, to import the SRC-20 Native Asset Standard use the following statement in your Sway Smart Contract file:
 
 ```sway
-use standards::src20::SRC20;
+use src20::SRC20;
 ```
 
 ## Standards
@@ -41,11 +48,15 @@ use standards::src20::SRC20;
 - [SRC-6; Vault Standard](./src-6-vault.md) defines the implementation of a standard API for asset vaults developed in Sway.
 - [SRC-13; Soulbound Address](./src-13-soulbound-address.md) defines the implementation of a soulbound address.
 
-### Metadata
+### Onchain Data
 
 - [SRC-7; Onchain Asset Metadata Standard](./src-7-asset-metadata.md) is used to store metadata for [Native Assets](https://docs.fuel.network/docs/sway/blockchain-development/native_assets).
 - [SRC-9; Metadata Keys Standard](./src-9-metadata-keys.md) is used to store standardized metadata keys for [Native Assets](https://docs.fuel.network/docs/sway/blockchain-development/native_assets) in combination with the SRC-7 standard.
+
+### Offchain Data
+
 - [SRC-15; Offchain Asset Metadata Standard](./src-15-offchain-asset-metadata.md) is used to associated metadata with [Native Assets](https://docs.fuel.network/docs/sway/blockchain-development/native_assets) offchain.
+- [SRC-17; Naming Verification Standard](./src-17-naming-verification.md) defines a naming verification standard for onchain identities using offchain data.
 
 ### Security and Access Control
 

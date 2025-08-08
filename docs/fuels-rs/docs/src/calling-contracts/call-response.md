@@ -17,10 +17,9 @@ Once you unwrap the `CallResponse`, you have access to this struct:
 ```rust,ignore
 pub struct CallResponse<D> {
     pub value: D,
-    pub receipts: Vec<Receipt>,
-    pub gas_used: u64,
+    pub tx_status: Success,
+    pub tx_id: Option<TxId>,
     pub log_decoder: LogDecoder,
-    pub tx_id: Option<Bytes32>,
 }
 ```
 

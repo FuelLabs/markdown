@@ -61,6 +61,7 @@
   - [`JNZF`: Jump if not zero relative forwards](#jnzf-jump-if-not-zero-relative-forwards)
   - [`JNEB`: Jump if not equal relative backwards](#jneb-jump-if-not-equal-relative-backwards)
   - [`JNEF`: Jump if not equal relative forwards](#jnef-jump-if-not-equal-relative-forwards)
+  - [`JAL`: Jump and link](#jal-jump-and-link)
   - [`RET`: Return from context](#ret-return-from-context)
 - [Memory Instructions](#memory-instructions)
   - [`ALOC`: Allocate memory](#aloc-allocate-memory)
@@ -563,10 +564,11 @@ Then the actual operation that's performed:
 `op` | Name | Description
 -----|-------|---------------------------
 0    | `add` | Add (`a = b + c`)
-1    | `mul` | Multiply (`a = b * c`)
-2    | `exp` | Exponentiate (`a = b ** c`)
-3    | `sll` | Bit shift left (logical) (`a = b << c`)
-4    | `xnor`| Bitwise xnor (`a = b ^ (!c)`).
+1    | `sub` | Subtract (`a = b - c`)
+2    | `mul` | Multiply (`a = b * c`)
+3    | `exp` | Exponentiate (`a = b ** c`)
+4    | `sll` | Bit shift left (logical) (`a = b << c`)
+5    | `xnor`| Bitwise xnor (`a = b ^ (!c)`).
 other| -     | Reserved and must not be used
 
 And operation width:
@@ -583,6 +585,7 @@ then perform the operation with overflow checking on that size. The
 result always fits within the bit width of the operation.
 
 Operations set `$of` and `$err` similarly to their 64-bit counterparts.
+For subtraction specifically, this means that an overflowing operation sets `$of` to all ones (`2**64-1`).
 `XNOR` has no counterpart, and it always clears both `$of` and `$err`.
 
 Panic if:
@@ -1296,6 +1299,21 @@ Panic if:
 Panic if:
 
 - `$pc + ($rC + imm + 1) * 4 > VM_MAX_RAM - 1`
+
+### `JAL`: Jump and link
+
+|             |                                                                                               |
+|-------------|-----------------------------------------------------------------------------------------------|
+| Description | Set `$rA` to address of the next instruction. Jump to instruction at address `$rB + imm * 4`. |
+| Operation   | `if $rA is not $zero { $rA = $pc + 4 }` <br> `$pc = $rB + imm * 4`                            |
+| Syntax      | `jal $rA $rB imm`                                                                             |
+| Encoding    | `0x00 rA rB i i`                                                                              |
+| Notes       | If `$rA` is `$zero`, the return address discarded.                                            |
+
+Panic if:
+
+- `$rA` is a reserved register other than `$zero`
+- `$rB + imm * 4 >= VM_MAX_RAM`
 
 ### `RET`: Return from context
 

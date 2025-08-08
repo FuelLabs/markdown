@@ -9,6 +9,7 @@ pub struct TxPolicies {
     tip: Option<u64>,
     witness_limit: Option<u64>,
     maturity: Option<u64>,
+    expiration: Option<u64>,
     max_fee: Option<u64>,
     script_gas_limit: Option<u64>,
 }
@@ -19,8 +20,9 @@ Where:
 1. **Tip** - amount to pay the block producer to prioritize the transaction.
 2. **Witness Limit** - The maximum amount of witness data allowed for the transaction.
 3. **Maturity** - Block until which the transaction cannot be included.
-4. **Max Fee** - The maximum fee payable by this transaction.
-5. **Script Gas Limit** - The maximum amount of gas the transaction may consume for executing its script code.
+4. **Expiration** - Block after which the transaction cannot be included.
+5. **Max Fee** - The maximum fee payable by this transaction.
+6. **Script Gas Limit** - The maximum amount of gas the transaction may consume for executing its script code.
 
 When the **Script Gas Limit** is not set, the Rust SDK will estimate the consumed gas in the background and set it as the limit.
 
@@ -30,12 +32,13 @@ You can configure these parameters by creating an instance of `TxPolicies` and p
 <!-- tx_policies:example:end-->
 
 ```rust,ignore
-        let contract_methods = MyContract::new(contract_id.clone(), wallet.clone()).methods();
+        let contract_methods = MyContract::new(contract_id, wallet.clone()).methods();
 
         let tx_policies = TxPolicies::default()
             .with_tip(1)
             .with_script_gas_limit(1_000_000)
-            .with_maturity(0);
+            .with_maturity(0)
+            .with_expiration(10_000);
 
         let response = contract_methods
             .initialize_counter(42) // Our contract method

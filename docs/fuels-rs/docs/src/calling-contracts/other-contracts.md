@@ -14,7 +14,7 @@ If your contract method is calling other contracts you will have to add the appr
     let response = contract_caller_instance
         .methods()
         .increment_from_contract(lib_contract_id, 42)
-        .with_contract_ids(&[lib_contract_id.clone()])
+        .with_contract_ids(&[lib_contract_id])
         .call()
         .await?;
 ```
@@ -25,7 +25,7 @@ If your contract method is calling other contracts you will have to add the appr
     let response = contract_caller_instance
         .methods()
         .increment_from_contract(lib_contract_id, 42)
-        .with_contract_ids(&[lib_contract_id.clone()])
+        .with_contract_ids(&[lib_contract_id])
         .call()
         .await?;
 ```

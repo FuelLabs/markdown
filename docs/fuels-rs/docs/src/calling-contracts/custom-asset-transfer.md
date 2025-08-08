@@ -10,11 +10,7 @@ The SDK provides the option to transfer assets within the same transaction, when
         let _ = contract_instance
             .methods()
             .initialize_counter(42)
-            .add_custom_asset(
-                AssetId::zeroed(),
-                amount,
-                Some(other_wallet.address().clone()),
-            )
+            .add_custom_asset(AssetId::zeroed(), amount, Some(some_addr))
             .call()
             .await?;
 ```

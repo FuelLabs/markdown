@@ -55,7 +55,7 @@ you would construct the function selector and the calldata as such, and provide 
                 Bytes(function_selector),
                 Bytes(call_data),
             )
-            .determine_missing_contracts(None)
+            .determine_missing_contracts()
             .await?
             .call()
             .await?;

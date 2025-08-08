@@ -74,16 +74,8 @@ Example of the SRC-3 implementation where a contract only mints a single asset w
 ```sway
 contract;
 
-use standards::{
-    src20::{
-        SetDecimalsEvent,
-        SetNameEvent,
-        SetSymbolEvent,
-        SRC20,
-        TotalSupplyEvent,
-    },
-    src3::SRC3,
-};
+use src20::{SetDecimalsEvent, SetNameEvent, SetSymbolEvent, SRC20, TotalSupplyEvent};
+use src3::SRC3;
 use std::{
     asset::{
         burn,
@@ -283,16 +275,8 @@ Example of the SRC-3 implementation where a contract mints multiple assets with 
 ```sway
 contract;
 
-use standards::{
-    src20::{
-        SetDecimalsEvent,
-        SetNameEvent,
-        SetSymbolEvent,
-        SRC20,
-        TotalSupplyEvent,
-    },
-    src3::SRC3,
-};
+use src20::{SetDecimalsEvent, SetNameEvent, SetSymbolEvent, SRC20, TotalSupplyEvent};
+use src3::SRC3;
 use std::{
     asset::{
         burn,

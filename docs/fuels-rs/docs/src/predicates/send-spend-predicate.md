@@ -5,10 +5,19 @@ This is a more involved example where the predicate accepts three signatures and
 ```rust,ignore
 predicate;
 
-use std::{b512::B512, constants::ZERO_B256, ecr::ec_recover_address, inputs::input_predicate_data};
+use std::{
+    b512::B512,
+    crypto::{
+        message::Message,
+        secp256k1::Secp256k1,
+    },
+    inputs::input_predicate_data,
+};
 
 fn extract_public_key_and_match(signature: B512, expected_public_key: b256) -> u64 {
-    if let Result::Ok(pub_key_sig) = ec_recover_address(signature, ZERO_B256)
+    let signature = Secp256k1::from(signature);
+
+    if let Result::Ok(pub_key_sig) = signature.address(Message::from(b256::zero()))
     {
         if pub_key_sig == Address::from(expected_public_key) {
             return 1;
@@ -36,45 +45,44 @@ fn main(signatures: [B512; 3]) -> bool {
 
 ```
 
-Let's use the SDK to interact with the predicate. First, let's create three wallets with specific keys. Their hashed public keys are already hard-coded in the predicate. Then we create the receiver wallet, which we will use to spend the predicate funds.
+Let's use the SDK to interact with the predicate. First, let's create three signers with specific keys. Their hashed public keys are already hard-coded in the predicate. Then we create the receiver signer, which we will use to spend the predicate funds.
 
 ```rust,ignore
-        let secret_key1: SecretKey =
-            "0x862512a2363db2b3a375c0d4bbbd27172180d89f23f2e259bac850ab02619301".parse()?;
-
-        let secret_key2: SecretKey =
-            "0x37fa81c84ccd547c30c176b118d5cb892bdb113e8e80141f266519422ef9eefd".parse()?;
-
-        let secret_key3: SecretKey =
-            "0x976e5c3fa620092c718d852ca703b6da9e3075b9f2ecb8ed42d9f746bf26aafb".parse()?;
-
-        let mut wallet = WalletUnlocked::new_from_private_key(secret_key1, None);
-        let mut wallet2 = WalletUnlocked::new_from_private_key(secret_key2, None);
-        let mut wallet3 = WalletUnlocked::new_from_private_key(secret_key3, None);
-        let mut receiver = WalletUnlocked::new_random(None);
+        let wallet_signer = PrivateKeySigner::new(
+            "0x862512a2363db2b3a375c0d4bbbd27172180d89f23f2e259bac850ab02619301".parse()?,
+        );
+        let wallet2_signer = PrivateKeySigner::new(
+            "0x37fa81c84ccd547c30c176b118d5cb892bdb113e8e80141f266519422ef9eefd".parse()?,
+        );
+        let wallet3_signer = PrivateKeySigner::new(
+            "0x976e5c3fa620092c718d852ca703b6da9e3075b9f2ecb8ed42d9f746bf26aafb".parse()?,
+        );
+        let receiver_signer = PrivateKeySigner::random(&mut thread_rng());
 ```
 
-Next, let's add some coins, start a provider and connect it with the wallets.
+Next, let's add some coins, start a provider and create the wallets.
 
 ```rust,ignore
         let asset_id = AssetId::zeroed();
         let num_coins = 32;
         let amount = 64;
         let initial_balance = amount * num_coins;
-        let all_coins = [&wallet, &wallet2, &wallet3, &receiver]
-            .iter()
-            .flat_map(|wallet| {
-                setup_single_asset_coins(wallet.address(), asset_id, num_coins, amount)
-            })
-            .collect::<Vec<_>>();
+        let all_coins = [
+            &wallet_signer,
+            &wallet2_signer,
+            &wallet3_signer,
+            &receiver_signer,
+        ]
+        .iter()
+        .flat_map(|signer| setup_single_asset_coins(signer.address(), asset_id, num_coins, amount))
+        .collect::<Vec<_>>();
 
         let provider = setup_test_provider(all_coins, vec![], None, None).await?;
 
-        [&mut wallet, &mut wallet2, &mut wallet3, &mut receiver]
-            .iter_mut()
-            .for_each(|wallet| {
-                wallet.set_provider(provider.clone());
-            });
+        let wallet = Wallet::new(wallet_signer, provider.clone());
+        let wallet2 = Wallet::new(wallet2_signer, provider.clone());
+        let wallet3 = Wallet::new(wallet3_signer, provider.clone());
+        let receiver = Wallet::new(receiver_signer, provider.clone());
 ```
 
 Now we can use the predicate abigen to create a predicate encoder instance for us. To spend the funds now locked in the predicate, we must provide two out of three signatures whose public keys match the ones we defined in the predicate. In this example, the signatures are generated from an array of zeros.
@@ -108,7 +116,7 @@ Next, we transfer some assets from a wallet to the created predicate. We also co
             .await?;
 
         let predicate_balance = predicate.get_asset_balance(&asset_id).await?;
-        assert_eq!(predicate_balance, amount_to_predicate);
+        assert_eq!(predicate_balance, amount_to_predicate as u128);
 ```
 
 We can use the `transfer` method from the [Account](../accounts.md) trait to transfer the assets. If the predicate data is correct, the `receiver` wallet will get the funds, and we will verify that the amount is correct.
@@ -125,5 +133,8 @@ We can use the `transfer` method from the [Account](../accounts.md) trait to tra
             .await?;
 
         let receiver_balance_after = receiver.get_asset_balance(&asset_id).await?;
-        assert_eq!(initial_balance + amount_to_receiver, receiver_balance_after);
+        assert_eq!(
+            (initial_balance + amount_to_receiver) as u128,
+            receiver_balance_after
+        );
 ```
