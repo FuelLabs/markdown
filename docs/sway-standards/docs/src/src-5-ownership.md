@@ -88,7 +88,7 @@ Example of the SRC-5 implementation where a contract does not have an owner set 
 ```sway
 contract;
 
-use standards::src5::{SRC5, State};
+use src5::{SRC5, State};
 
 storage {
     /// The owner in storage.
@@ -135,7 +135,7 @@ Example of the SRC-5 implementation where a contract has an owner set at compile
 ```sway
 contract;
 
-use standards::src5::{SRC5, State};
+use src5::{SRC5, State};
 
 /// The owner of this contract at deployment.
 #[allow(dead_code)]

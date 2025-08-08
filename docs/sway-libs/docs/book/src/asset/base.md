@@ -1,16 +1,25 @@
 # Base Functionality
 
-For implementation details on the Asset Library base functionality please see the [Sway Libs Docs](https://fuellabs.github.io/sway-libs/master/sway_libs/asset/base/index.html).
+For implementation details on the Asset Library base functionality please see the [Sway Libs Docs](https://fuellabs.github.io/sway-libs/master/sway_libs/asset/asset/base/index.html).
 
 ## Importing the Asset Library Base Functionality
 
-In order to use the Asset Library, Sway Libs and [Sway Standards](https://docs.fuel.network/docs/sway-standards/) must be added to the `Forc.toml` file and then imported into your Sway project. To add Sway Libs as a dependency to the `Forc.toml` file in your project please see the [Getting Started](../getting_started/index.md). To add Sway Standards as a dependency please see the [Sway Standards Book](https://docs.fuel.network/docs/sway-standards/#using-a-standard).
+In order to use base functionality the Asset Library, the Asset Library and the [SRC-20](https://docs.fuel.network/docs/sway-standards/src-20-native-asset/) Standard must be added to your `Forc.toml` file and then imported into your Sway project.
+
+To add the Asset Library and the [SRC-20](https://docs.fuel.network/docs/sway-standards/src-20-native-asset/) Standard as a dependency to your `Forc.toml` file in your project, use the `forc add` command.
+
+```bash
+forc add asset@0.26.0
+forc add src20@0.8.0
+```
+
+> **NOTE:** Be sure to set the version to the latest release.
 
 To import the Asset Library Base Functionality and [SRC-20](https://docs.fuel.network/docs/sway-standards/src-20-native-asset/) Standard to your Sway Smart Contract, add the following to your Sway file:
 
 ```sway
-use sway_libs::asset::base::*;
-use standards::src20::*;
+use asset::base::*;
+use src20::*;
 ```
 
 ## Integration with the SRC-20 Standard
@@ -78,8 +87,8 @@ storage {
 To use the Asset Library's base functionly, simply pass the `StorageKey` from the prescribed storage block. The example below shows the implementation of the [SRC-20](https://docs.fuel.network/docs/sway-standards/src-20-native-asset/) standard in combination with the Asset Library with no user defined restrictions or custom functionality.
 
 ```sway
-use sway_libs::asset::base::{_decimals, _name, _symbol, _total_assets, _total_supply};
-use standards::src20::SRC20;
+use asset::base::{_decimals, _name, _symbol, _total_assets, _total_supply};
+use src20::SRC20;
 use std::{hash::Hash, storage::storage_string::*, string::String};
 
 // The SRC-20 storage block
@@ -132,7 +141,7 @@ To set some the asset attributes for an Asset, use the `SetAssetAttributes` ABI 
 The `_set_name()`, `_set_symbol()`, and `_set_decimals()` functions follows the SRC-20 standard for logging and will emit their respective log when called.
 
 ```sway
-use sway_libs::asset::base::*;
+use asset::base::*;
 use std::{hash::Hash, storage::storage_string::*, string::String};
 
 storage {

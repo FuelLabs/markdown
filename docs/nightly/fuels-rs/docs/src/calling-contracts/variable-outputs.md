@@ -17,7 +17,7 @@ When calling `transfer_coins_to_output` with the SDK, you can specify the number
 
 ```rust,ignore
         let address = wallet.address();
-        let asset_id = contract_id.asset_id(&Bits256::zeroed());
+        let asset_id = contract_id.asset_id(&SubAssetId::zeroed());
 
         // withdraw some tokens to wallet
         let response = contract_methods

@@ -1,16 +1,25 @@
 # Metadata Functionality
 
-For implementation details on the Asset Library metadata functionality please see the [Sway Libs Docs](https://fuellabs.github.io/sway-libs/master/sway_libs/asset/metadata/index.html).
+For implementation details on the Asset Library metadata functionality please see the [Sway Libs Docs](https://fuellabs.github.io/sway-libs/master/sway_libs/asset/asset/metadata/index.html).
 
 ## Importing the Asset Library Metadata Functionality
 
-In order to use the Asset Library, Sway Libs and [Sway Standards](https://docs.fuel.network/docs/sway-standards/) must be added to the `Forc.toml` file and then imported into your Sway project. To add Sway Libs as a dependency to the `Forc.toml` file in your project please see the [Getting Started](../getting_started/index.md). To add Sway Standards as a dependency please see the [Sway Standards Book](https://docs.fuel.network/docs/sway-standards/#using-a-standard).
+In order to use metadata functionality the Asset Library, the Asset Library and the [SRC-7](https://docs.fuel.network/docs/sway-standards/src-7-asset-metadata/) Standard must be added to your `Forc.toml` file and then imported into your Sway project.
+
+To add the Asset Library and the [SRC-7](https://docs.fuel.network/docs/sway-standards/src-7-asset-metadata/) Standard as a dependency to your `Forc.toml` file in your project, use the `forc add` command.
+
+```bash
+forc add asset@0.26.0
+forc add src7@0.8.0
+```
+
+> **NOTE:** Be sure to set the version to the latest release.
 
 To import the Asset Library Base Functionality and [SRC-7](https://docs.fuel.network/docs/sway-standards/src-7-asset-metadata/) Standard to your Sway Smart Contract, add the following to your Sway file:
 
 ```sway
-use sway_libs::asset::metadata::{_metadata, _set_metadata, SetAssetMetadata, StorageMetadata};
-use standards::src7::*;
+use asset::metadata::{_metadata, _set_metadata, SetAssetMetadata, StorageMetadata};
+use src7::*;
 ```
 
 ## Integration with the SRC-7 Standard
@@ -54,8 +63,8 @@ To set some metadata of any of the above types for an Asset, you can use the `Se
 The `_set_metadata()` function follows the SRC-7 standard for logging and will emit the `SetMetadataEvent` when called.
 
 ```sway
-use sway_libs::asset::metadata::*;
-use standards::src7::Metadata;
+use asset::metadata::*;
+use src7::Metadata;
 
 storage {
     metadata: StorageMetadata = StorageMetadata {},
@@ -151,8 +160,8 @@ impl CustomSetAssetMetadata for Contract {
 To use the `StorageMetadata` type, simply get the stored metadata with the associated `key` and `AssetId` using the provided `_metadata()` convenience function. The example below shows the implementation of the [SRC-7](https://docs.fuel.network/docs/sway-standards/src-7-asset-metadata/) standard in combination with the Asset Library's `StorageMetadata` type and the `_metadata()` function with no user defined restrictions or custom functionality.
 
 ```sway
-use sway_libs::asset::metadata::*;
-use standards::src7::{Metadata, SRC7};
+use asset::metadata::*;
+use src7::{Metadata, SRC7};
 
 storage {
     metadata: StorageMetadata = StorageMetadata {},
@@ -173,7 +182,7 @@ impl SRC7 for Contract {
 To get the metadata for an asset, apart from the above mentioned `_metadata()` convenience function, you can also use the `get()` method on the `StorageMetadata` type, which returns the `Metadata` type.
 
 ```sway
-    use sway_libs::asset::metadata::*; // To access trait implementations you must import everything using the glob operator.
+    use asset::metadata::*; // To access trait implementations you must import everything using the glob operator.
     let metadata: Option<Metadata> = storage.metadata.get(asset, key);
     match metadata.unwrap() {
         Metadata::B256(b256) => {

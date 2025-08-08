@@ -27,17 +27,20 @@ impl ReturnContext for Contract {
 <!-- This section should explain the `forward` param -->
 <!-- forward:example:start -->
 
-The `forward` parameter allows the sending of a specific amount of coins to a contract when a function is called. This is useful when a contract function requires coins for its execution, such as paying fees or transferring funds. The forward parameter helps you control the resources allocated to the contract call and offers protection against potentially costly operations.
+The `forward` parameter allows the sending of a specific amount of coins to a contract when a function is called. This is useful when a contract function requires coins for its execution, such as transferring funds to another account or contract.
+
+The forward parameter helps you control the resources allocated to the contract call and offers protection against potentially costly operations.
 
 <!-- forward:example:end -->
 
 ```
 const amountToForward = 10;
+const baseAssetId = await provider.getBaseAssetId();
 
 const { waitForResult } = await contract.functions
   .return_context_amount()
   .callParams({
-    forward: [amountToForward, await provider.getBaseAssetId()],
+    forward: [amountToForward, baseAssetId],
   })
   .call();
 

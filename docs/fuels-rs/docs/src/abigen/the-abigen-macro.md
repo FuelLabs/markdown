@@ -191,17 +191,13 @@ pub mod abigen_bindings {
     pub mod my_contract_mod {
         #[derive(Debug, Clone)]
         pub struct MyContract<A: ::fuels::accounts::Account> {
-            contract_id: ::fuels::types::bech32::Bech32ContractId,
+            contract_id: ::fuels::types::ContractId,
             account: A,
             log_decoder: ::fuels::core::codec::LogDecoder,
             encoder_config: ::fuels::core::codec::EncoderConfig,
         }
         impl<A: ::fuels::accounts::Account> MyContract<A> {
-            pub fn new(
-                contract_id: impl ::core::convert::Into<::fuels::types::bech32::Bech32ContractId>,
-                account: A,
-            ) -> Self {
-                let contract_id: ::fuels::types::bech32::Bech32ContractId = contract_id.into();
+            pub fn new(contract_id: ::fuels::types::ContractId, account: A) -> Self {
                 let log_decoder = ::fuels::core::codec::LogDecoder::new(
                     ::fuels::core::codec::log_formatters_lookup(vec![], contract_id.clone().into()),
                 );
@@ -213,8 +209,8 @@ pub mod abigen_bindings {
                     encoder_config,
                 }
             }
-            pub fn contract_id(&self) -> &::fuels::types::bech32::Bech32ContractId {
-                &self.contract_id
+            pub fn contract_id(&self) -> &::fuels::types::ContractId {
+                self.contract_id
             }
             pub fn account(&self) -> A {
                 self.account.clone()
@@ -254,7 +250,7 @@ pub mod abigen_bindings {
             }
         }
         pub struct MyContractMethods<A: ::fuels::accounts::Account> {
-            contract_id: ::fuels::types::bech32::Bech32ContractId,
+            contract_id: ::fuels::types::ContractId,
             account: A,
             log_decoder: ::fuels::core::codec::LogDecoder,
             encoder_config: ::fuels::core::codec::EncoderConfig,
@@ -300,7 +296,7 @@ pub mod abigen_bindings {
             }
         }
         impl<A: ::fuels::accounts::Account> ::fuels::programs::calls::ContractDependency for MyContract<A> {
-            fn id(&self) -> ::fuels::types::bech32::Bech32ContractId {
+            fn id(&self) -> ::fuels::types::ContractId {
                 self.contract_id.clone()
             }
             fn log_decoder(&self) -> ::fuels::core::codec::LogDecoder {

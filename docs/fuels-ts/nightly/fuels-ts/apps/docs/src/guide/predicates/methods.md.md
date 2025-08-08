@@ -62,12 +62,70 @@ transactionRequest.addResources(predicateCoins);
 
 ## Transactions
 
+### `setData`
+
+The `setData` method can be used to update the predicate data (i.e., predicate arguments) after the predicate has already been instantiated. Since the predicate data is initially set during instantiation, `setData` provides a way to modify it afterward if needed.
+
+```
+const predicate = new ConfigurablePin({
+  provider,
+  data: [1000], // This is the initial set data
+});
+
+predicate.setData([1337]); // This is the new set data
+```
+
+> Note: Using `setData` only updates the predicate data inside the predicate instance itself. It does not affect predicate data already embedded in a transaction request that includes predicate UTXOs. This is because each predicate UTXO carries its own copy of the predicate data.
+
+```
+const predicate = new ConfigurablePin({
+  provider,
+  data: [1000],
+});
+
+// Fund the predicate
+const fundPredicate = await funder.transfer(predicate.address, 100_000_000);
+await fundPredicate.waitForResult();
+
+const transactionRequest = await predicate.createTransfer(
+  receiver.address,
+  100_000,
+  baseAssetId
+);
+
+// The data will not be modified within the transaction request
+predicate.setData([1337]);
+```
+
+If you need to modify the predicate data within a transaction request, use the `populateTransactionPredicateData` method after setting the new data.
+
+```
+const predicate = new ConfigurablePin({
+  provider,
+  data: [1000],
+});
+
+// Fund the predicate
+const fundPredicate = await funder.transfer(predicate.address, 100_000_000);
+await fundPredicate.waitForResult();
+
+const transactionRequest = await predicate.createTransfer(
+  receiver.address,
+  100_000,
+  baseAssetId
+);
+
+predicate.setData([1337]);
+
+predicate.populateTransactionPredicateData(transactionRequest);
+```
+
 ### `sendTransaction`
 
 This is used to send a transaction to the node.
 
 ```
-import { bn, Provider, ScriptTransactionRequest, Wallet } from 'fuels';
+import { Provider, ScriptTransactionRequest, Wallet } from 'fuels';
 
 import { LOCAL_NETWORK_URL, WALLET_PVT_KEY } from '../../../../env';
 import { ReturnTruePredicate } from '../../../../typegend';
@@ -91,24 +149,24 @@ const fundPredicate = await funder.transfer(
 await fundPredicate.waitForResult();
 
 // Instantiate the transaction request.
-const transactionRequest = new ScriptTransactionRequest({
-  gasLimit: 2000,
-  maxFee: bn(100),
-});
-
-// Get the resources available to send from the predicate.
-const predicateCoins = await predicate.getResourcesToSpend([
-  { amount: 2000, assetId: baseAssetId },
-]);
-
-// Add the predicate input and resources.
-transactionRequest.addResources(predicateCoins);
+const request = new ScriptTransactionRequest();
 
 // Estimate and fund the transaction
-await transactionRequest.estimateAndFund(predicate);
+const { assembledRequest } = await provider.assembleTx({
+  request,
+  feePayerAccount: predicate,
+  accountCoinQuantities: [
+    {
+      amount: '0',
+      assetId: baseAssetId,
+      account: predicate,
+      changeOutputAccount: predicate,
+    },
+  ],
+});
 
 // Send the transaction using the predicate
-const result = await predicate.sendTransaction(transactionRequest);
+const result = await predicate.sendTransaction(assembledRequest);
 
 await result.waitForResult();
 ```
@@ -147,17 +205,27 @@ const fundPredicate = await funder.transfer(
 await fundPredicate.waitForResult();
 
 // Instantiate the transaction request.
-const transactionRequest = new ScriptTransactionRequest({
-  gasLimit: 2000,
-  maxFee: bn(0),
-});
+const request = new ScriptTransactionRequest();
 
-transactionRequest.addCoinOutput(receiver.address, 1000000, baseAssetId);
+const amount = bn(1_000_000);
+
+request.addCoinOutput(receiver.address, amount, baseAssetId);
 
 // Estimate and fund the transaction
-await transactionRequest.estimateAndFund(predicate);
+const { assembledRequest } = await provider.assembleTx({
+  request,
+  feePayerAccount: predicate,
+  accountCoinQuantities: [
+    {
+      amount,
+      assetId: baseAssetId,
+      account: predicate,
+      changeOutputAccount: predicate,
+    },
+  ],
+});
 
-const result = await predicate.simulateTransaction(transactionRequest);
+const result = await predicate.simulateTransaction(assembledRequest);
 ```
 
 ## Transfers

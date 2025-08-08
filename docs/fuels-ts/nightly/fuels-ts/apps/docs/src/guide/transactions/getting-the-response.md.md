@@ -33,19 +33,28 @@ We can also use the result of a transaction request to extract a transaction sum
  * Instantiate the transaction request using a ScriptTransactionRequest and
  * set the script main function arguments
  */
-const transactionRequest = new ScriptTransactionRequest({
+const request = new ScriptTransactionRequest({
   script: ScriptSum.bytecode,
 });
 
-const scriptMainFunctionArguments = [1];
+request.setData(ScriptSum.abi, [1]);
 
-transactionRequest.setData(ScriptSum.abi, scriptMainFunctionArguments);
-
-// Fund the transaction
-await transactionRequest.estimateAndFund(wallet);
+// Estimate and funding the transaction
+const { assembledRequest } = await provider.assembleTx({
+  request,
+  feePayerAccount: wallet,
+  accountCoinQuantities: [
+    {
+      amount: 1000,
+      assetId: await provider.getBaseAssetId(),
+      account: wallet,
+      changeOutputAccount: wallet,
+    },
+  ],
+});
 
 // Submit the transaction
-const response = await wallet.sendTransaction(transactionRequest);
+const response = await wallet.sendTransaction(assembledRequest);
 
 // Generate the transaction summary
 const transactionSummary = await response.getTransactionSummary();

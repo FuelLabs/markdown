@@ -116,7 +116,7 @@ Next, we transfer some assets from a wallet to the created predicate. We also co
             .await?;
 
         let predicate_balance = predicate.get_asset_balance(&asset_id).await?;
-        assert_eq!(predicate_balance, amount_to_predicate);
+        assert_eq!(predicate_balance, amount_to_predicate as u128);
 ```
 
 We can use the `transfer` method from the [Account](../accounts.md) trait to transfer the assets. If the predicate data is correct, the `receiver` wallet will get the funds, and we will verify that the amount is correct.
@@ -133,5 +133,8 @@ We can use the `transfer` method from the [Account](../accounts.md) trait to tra
             .await?;
 
         let receiver_balance_after = receiver.get_asset_balance(&asset_id).await?;
-        assert_eq!(initial_balance + amount_to_receiver, receiver_balance_after);
+        assert_eq!(
+            (initial_balance + amount_to_receiver) as u128,
+            receiver_balance_after
+        );
 ```

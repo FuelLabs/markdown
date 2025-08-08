@@ -1,16 +1,25 @@
 # Supply Functionality
 
-For implementation details on the Asset Library supply functionality please see the [Sway Libs Docs](https://fuellabs.github.io/sway-libs/master/sway_libs/asset/supply/index.html).
+For implementation details on the Asset Library supply functionality please see the [Sway Libs Docs](https://fuellabs.github.io/sway-libs/master/sway_libs/asset/asset/supply/index.html).
 
 ## Importing the Asset Library Supply Functionality
 
-In order to use the Asset Library, Sway Libs and [Sway Standards](https://docs.fuel.network/docs/sway-standards/) must be added to the `Forc.toml` file and then imported into your Sway project. To add Sway Libs as a dependency to the `Forc.toml` file in your project please see the [Getting Started](../getting_started/index.md). To add Sway Standards as a dependency please see the [Sway Standards Book](https://docs.fuel.network/docs/sway-standards/#using-a-standard).
+In order to use the supply functionality of the Asset Library, the Asset Library and the [SRC-3](https://docs.fuel.network/docs/sway-standards/src-3-minting-and-burning/) Standard must be added to your `Forc.toml` file and then imported into your Sway project.
+
+To add the Asset Library and the [SRC-3](https://docs.fuel.network/docs/sway-standards/src-3-minting-and-burning/) Standard as a dependency to your `Forc.toml` file in your project, use the `forc add` command.
+
+```bash
+forc add asset@0.8.0
+forc add src3@0.8.0
+```
+
+> **NOTE:** Be sure to set the version to the latest release.
 
 To import the Asset Library Supply Functionality and [SRC-3](https://docs.fuel.network/docs/sway-standards/src-3-minting-and-burning/) Standard to your Sway Smart Contract, add the following to your Sway file:
 
 ```sway
-use sway_libs::asset::supply::*;
-use standards::src3::*;
+use asset::supply::*;
+use src3::*;
 ```
 
 ## Integration with the SRC-3 Standard
@@ -52,8 +61,8 @@ To use either function, simply pass the `StorageKey` from the prescribed storage
 The `_mint()` and `_burn()` functions follows the SRC-20 standard for logging and will emit the `TotalSupplyEvent` when called.
 
 ```sway
-use sway_libs::asset::supply::{_burn, _mint};
-use standards::src3::SRC3;
+use asset::supply::{_burn, _mint};
+use src3::SRC3;
 
 storage {
     total_assets: u64 = 0,

@@ -13,6 +13,8 @@ If, for whatever reason, you wish to generate the function selector yourself you
 
         assert_eq!(
             selector,
-            [0, 0, 0, 0, 0, 0, 0, 12, 115, 111, 109, 101, 95, 102, 110, 95, 110, 97, 109, 101]
+            [
+                0, 0, 0, 0, 0, 0, 0, 12, 115, 111, 109, 101, 95, 102, 110, 95, 110, 97, 109, 101
+            ]
         );
 ```

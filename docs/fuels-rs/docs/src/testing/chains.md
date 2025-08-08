@@ -8,7 +8,7 @@ You can use `produce_blocks` to help achieve an arbitrary block height; this is 
     let wallets =
         launch_custom_provider_and_get_wallets(WalletsConfig::default(), None, None).await?;
     let wallet = &wallets[0];
-    let provider = wallet.try_provider()?;
+    let provider = wallet.provider();
 
     assert_eq!(provider.latest_block_height().await?, 0u32);
 
@@ -32,7 +32,7 @@ You can also set a custom block time as the second, optional argument. Here is a
         launch_custom_provider_and_get_wallets(WalletsConfig::default(), Some(config), None)
             .await?;
     let wallet = &wallets[0];
-    let provider = wallet.try_provider()?;
+    let provider = wallet.provider();
 
     assert_eq!(provider.latest_block_height().await?, 0u32);
     let origin_block_time = provider.latest_block_time().await?.unwrap();

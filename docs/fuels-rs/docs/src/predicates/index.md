@@ -53,7 +53,7 @@ Once we've compiled our predicate with `forc build`, we can create a `Predicate`
         let code_path = "../../e2e/sway/predicates/basic_predicate/out/release/basic_predicate.bin";
 
         let predicate: Predicate = Predicate::load_from(code_path)?
-            .with_provider(first_wallet.try_provider()?.clone())
+            .with_provider(first_wallet.provider().clone())
             .with_data(predicate_data);
 ```
 

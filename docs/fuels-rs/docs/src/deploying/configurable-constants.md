@@ -83,7 +83,8 @@ Each of the configurable constants will get a dedicated `with` method in the SDK
         LoadConfiguration::default().with_configurables(configurables),
     )?
     .deploy_if_not_exists(&wallet, TxPolicies::default())
-    .await?;
+    .await?
+    .contract_id;
 
     let contract_instance = MyContract::new(contract_id, wallet.clone());
 ```

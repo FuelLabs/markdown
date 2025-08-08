@@ -11,8 +11,8 @@ If you need multiple test wallets, they can be set up using the `launch_custom_p
 
 ```rust,ignore
         use fuels::prelude::*;
-        // This helper will launch a local node and provide 10 test wallets linked to it.
-        // The initial balance defaults to 1 coin per wallet with an amount of 1_000_000_000
+        // This helper launches a local node and provides 10 test wallets linked to it.
+        // The initial balance defaults to 1 coin per wallet with an amount of 1_000_000_000.
         let wallets =
             launch_custom_provider_and_get_wallets(WalletsConfig::default(), None, None).await?;
 ```
@@ -26,13 +26,12 @@ You can customize your test wallets via `WalletsConfig`.
         let num_wallets = 5;
         let coins_per_wallet = 3;
         let amount_per_coin = 100;
-
         let config = WalletsConfig::new(
             Some(num_wallets),
             Some(coins_per_wallet),
             Some(amount_per_coin),
         );
-        // Launches a local node and provides test wallets as specified by the config
+        // Launches a local node and provides test wallets as specified by the config.
         let wallets = launch_custom_provider_and_get_wallets(config, None, None).await?;
 ```
 
@@ -49,20 +48,20 @@ You can create a test wallet containing multiple assets (including the base asse
 ```rust,ignore
         // ANCHOR: multiple_assets_coins
         use fuels::prelude::*;
-        let mut wallet = WalletUnlocked::new_random(None);
-        let num_assets = 5; // 5 different assets
-        let coins_per_asset = 10; // Per asset id, 10 coins in the wallet
-        let amount_per_coin = 15; // For each coin (UTXO) of the asset, amount of 15
+        let signer = PrivateKeySigner::random(&mut thread_rng());
+        let num_assets = 5;
+        let coins_per_asset = 10;
+        let amount_per_coin = 15;
 
         let (coins, asset_ids) = setup_multiple_assets_coins(
-            wallet.address(),
+            signer.address(),
             num_assets,
             coins_per_asset,
             amount_per_coin,
         );
         // ANCHOR_END: multiple_assets_coins
         let provider = setup_test_provider(coins.clone(), vec![], None, None).await?;
-        wallet.set_provider(provider);
+        let wallet = Wallet::new(signer, provider);
 ```
 
 - coins: `Vec<(UtxoId, Coin)>` has `num_assets` * `coins_per_assets` coins (UTXOs)
@@ -76,8 +75,8 @@ You can also create assets with specific `AssetId`s, coin amounts, and number of
         use fuels::prelude::*;
         use rand::Fill;
 
-        let mut wallet = WalletUnlocked::new_random(None);
         let mut rng = rand::thread_rng();
+        let signer = PrivateKeySigner::random(&mut rng);
 
         let asset_base = AssetConfig {
             id: AssetId::zeroed(),
@@ -102,10 +101,9 @@ You can also create assets with specific `AssetId`s, coin amounts, and number of
         };
 
         let assets = vec![asset_base, asset_1, asset_2];
-
-        let coins = setup_custom_assets_coins(wallet.address(), &assets);
+        let coins = setup_custom_assets_coins(signer.address(), &assets);
         let provider = setup_test_provider(coins, vec![], None, None).await?;
-        wallet.set_provider(provider);
+        let wallet = Wallet::new(signer, provider.clone());
         let num_wallets = 1;
         let wallet_config = WalletsConfig::new_multiple_assets(num_wallets, assets);
         let wallets = launch_custom_provider_and_get_wallets(wallet_config, None, None).await?;
@@ -132,13 +130,13 @@ For testing purposes, you can configure coins and amounts for assets. You can us
 
 ```rust,ignore
         use fuels::prelude::*;
-        let mut wallet = WalletUnlocked::new_random(None);
-        let num_assets = 5; // 5 different assets
-        let coins_per_asset = 10; // Per asset id, 10 coins in the wallet
-        let amount_per_coin = 15; // For each coin (UTXO) of the asset, amount of 15
+        let signer = PrivateKeySigner::random(&mut thread_rng());
+        let num_assets = 5;
+        let coins_per_asset = 10;
+        let amount_per_coin = 15;
 
         let (coins, asset_ids) = setup_multiple_assets_coins(
-            wallet.address(),
+            signer.address(),
             num_assets,
             coins_per_asset,
             amount_per_coin,
@@ -150,7 +148,7 @@ For testing purposes, you can configure coins and amounts for assets. You can us
 If you want to create coins only with the base asset, then you can use:
 
 ```rust,ignore
-        let wallet = WalletUnlocked::new_random(None);
+        let wallet_signer = PrivateKeySigner::random(&mut rand::thread_rng());
 
         // How many coins in our wallet.
         let number_of_coins = 1;
@@ -159,7 +157,7 @@ If you want to create coins only with the base asset, then you can use:
         let amount_per_coin = 3;
 
         let coins = setup_single_asset_coins(
-            wallet.address(),
+            wallet_signer.address(),
             AssetId::zeroed(),
             number_of_coins,
             amount_per_coin,

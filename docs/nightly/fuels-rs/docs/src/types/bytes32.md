@@ -32,8 +32,6 @@ These are the main ways of creating a `Bytes32`:
         let b256_string = b256.to_string();
         let b256_hex_string = format!("{b256:#x}");
         let _str_from_bytes32: &str = b256.to_string().as_str();
-        let my_hash = Bytes32::new([1u8; 32]);
-        let _bech32_address = Bech32Address::new(hrp, my_hash);
 ```
 
 `Bytes32` also implements the `fmt` module's `Debug`, `Display`, `LowerHex` and `UpperHex` traits. For example, you can get the display and hex representations with:

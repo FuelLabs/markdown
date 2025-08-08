@@ -77,14 +77,13 @@ containing its code:
 
 ```rust,ignore
     loader.upload_blob(extra_wallet).await?;
-
     predicate.set_provider(provider.clone());
 
-    let expected_fee = 1;
-    predicate
+    let amount_to_send = 42;
+    let response = predicate
         .transfer(
             receiver.address(),
-            predicate_balance - expected_fee,
+            amount_to_send,
             asset_id,
             TxPolicies::default(),
         )

@@ -8,7 +8,6 @@ Below you can find examples for common type conversions:
 - [Convert to `ContractId`](#convert-to-contractid)
 - [Convert to `Identity`](#convert-to-identity)
 - [Convert to `AssetId`](#convert-to-assetid)
-- [Convert to `Bech32`](#convert-to-bech32)
 - [Convert to `str`](#convert-to-str)
 - [Convert to `Bits256`](#convert-to-bits256)
 - [Convert to `Bytes`](#convert-to-bytes)
@@ -54,17 +53,11 @@ Convert a `[u8; 32]` array to an `Address`:
         let address = Address::new(my_slice);
 ```
 
-Convert a `Bech32` address to an `Address`:
-
-```rust,ignore
-        let _plain_address: Address = bech32_address.into();
-```
-
 Convert a wallet to an `Address`:
 
 ```rust,ignore
-        let wallet_unlocked = WalletUnlocked::new_random(None);
-        let address: Address = wallet_unlocked.address().into();
+        let wallet = Wallet::random(&mut rng, provider);
+        let address: Address = wallet.address();
 ```
 
 Convert a hex string to an `Address`:
@@ -93,7 +86,7 @@ Convert a hex string to a `ContractId`:
 Convert a contract instance to a `ContractId`:
 
 ```rust,ignore
-    let contract_id: ContractId = contract_instance.id().into();
+    let contract_id: ContractId = contract_instance.contract_id();
 ```
 
 ## Convert to `Identity`
@@ -124,37 +117,6 @@ Convert a hex string to an `AssetId`:
 ```rust,ignore
         let hex_str = "0x0000000000000000000000000000000000000000000000000000000000000000";
         let asset_id = AssetId::from_str(hex_str)?;
-```
-
-## Convert to `Bech32`
-
-Convert a `[u8; 32]` array to a `Bech32` address:
-
-```rust,ignore
-        let hrp = "fuel";
-        let my_slice = [1u8; 32];
-        let _bech32_address = Bech32Address::new(hrp, my_slice);
-```
-
-Convert `Bytes32` to a `Bech32` address:
-
-```rust,ignore
-        let my_hash = Bytes32::new([1u8; 32]);
-        let _bech32_address = Bech32Address::new(hrp, my_hash);
-```
-
-Convert a string to a `Bech32` address:
-
-```rust,ignore
-        let address = "fuel1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqsx2mt2";
-        let bech32_address = Bech32Address::from_str(address)?;
-```
-
-Convert an `Address` to a `Bech32` address:
-
-```rust,ignore
-        let plain_address = Address::new([0u8; 32]);
-        let bech32_address = Bech32Address::from(plain_address);
 ```
 
 ## Convert to `str`

@@ -45,6 +45,22 @@ The method for passing transaction policies is the same as [with contracts](./ca
         .await?;
 ```
 
+## Custom inputs and outputs
+
+If you need to add specific inputs and outputs to script calls, you can use the `with_inputs` and `with_outputs` methods.
+
+```rust,ignore
+        let _ = script_instance
+            .main(0, 0)
+            .with_inputs(custom_inputs)
+            .with_outputs(custom_output)
+            .add_signer(wallet_1.signer().clone())
+            .call()
+            .await?;
+```
+
+> **Note:** if custom inputs include coins that need to be signed, use the `add_signer` method to add the appropriate signer.
+
 ## Logs
 
 Script calls provide the same logging functions, `decode_logs()` and `decode_logs_with_type<T>()`, as contract calls. As a reminder, the workflow looks like this:
@@ -73,12 +89,12 @@ Below is an example that uses `with_contracts(&[&contract_instance, ...])`.
 
 ```rust,ignore
     let response = script_instance
-        .main(contract_id)
-        .with_contract_ids(&[contract_id.into()])
+        .main(contract_id, MatchEnum::Logs)
+        .with_contract_ids(&[contract_id])
         .call()
         .await?;
     let response = script_instance
-        .main(contract_id)
+        .main(contract_id, MatchEnum::Logs)
         .with_contracts(&[&contract_instance])
         .call()
         .await?;
@@ -88,8 +104,8 @@ And this is an example that uses `with_contract_ids(&[&contract_id, ...])`.
 
 ```rust,ignore
     let response = script_instance
-        .main(contract_id)
-        .with_contract_ids(&[contract_id.into()])
+        .main(contract_id, MatchEnum::Logs)
+        .with_contract_ids(&[contract_id])
         .call()
         .await?;
 ```

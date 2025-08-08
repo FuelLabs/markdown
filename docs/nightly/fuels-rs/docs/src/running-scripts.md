@@ -89,12 +89,12 @@ Below is an example that uses `with_contracts(&[&contract_instance, ...])`.
 
 ```rust,ignore
     let response = script_instance
-        .main(contract_id)
-        .with_contract_ids(&[contract_id.into()])
+        .main(contract_id, MatchEnum::Logs)
+        .with_contract_ids(&[contract_id])
         .call()
         .await?;
     let response = script_instance
-        .main(contract_id)
+        .main(contract_id, MatchEnum::Logs)
         .with_contracts(&[&contract_instance])
         .call()
         .await?;
@@ -104,8 +104,8 @@ And this is an example that uses `with_contract_ids(&[&contract_id, ...])`.
 
 ```rust,ignore
     let response = script_instance
-        .main(contract_id)
-        .with_contract_ids(&[contract_id.into()])
+        .main(contract_id, MatchEnum::Logs)
+        .with_contract_ids(&[contract_id])
         .call()
         .await?;
 ```

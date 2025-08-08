@@ -32,6 +32,4 @@ These are the main ways of creating an `Address`:
         let _identity_from_address = Identity::Address(address);
         let _str_from_address: &str = address.to_string().as_str();
         let bits_256 = Bits256(address.into());
-        let plain_address = Address::new([0u8; 32]);
-        let bech32_address = Bech32Address::from(plain_address);
 ```

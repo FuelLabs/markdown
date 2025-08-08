@@ -123,7 +123,7 @@ await submitTransaction.waitForResult();
 Trying to forward the entire amount held by the predicate results in an error because no funds are left to cover the transaction fees. Attempting this will result in an error message like:
 
 ```
-const errorMessage = `Insufficient funds or too many small value coins. Consider combining UTXOs.`;
+const errorMessage = `Insufficient funds or too many small value coins. Consider combining UTXOs.\nFor the following asset ID: '${baseAssetId}'.`;
 ```
 
 ## Predicate Validation Failure

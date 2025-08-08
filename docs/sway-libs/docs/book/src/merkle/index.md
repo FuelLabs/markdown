@@ -4,24 +4,32 @@ Merkle trees allow for on-chain verification of off-chain data. With the merkle 
 
 The Merkle Library currently supports two different tree structures: Binary Trees and Sparse Trees. For information implementation specifications, please refer to the [Merkle Tree Specification](https://docs.fuel.network/docs/specs/protocol/cryptographic-primitives/#merkle-trees).
 
-For implementation details on the Merkle Library please see the [Sway Libs Docs](https://fuellabs.github.io/sway-libs/master/sway_libs/merkle/index.html).
+For implementation details on the Merkle Library please see the [Sway Libs Docs](https://fuellabs.github.io/sway-libs/master/sway_libs/merkle/merkle/).
 
 ## Importing the Merkle Library
 
-In order to use the Merkle Library, Sway Libs must be added to the `Forc.toml` file and then imported into your Sway project. To add Sway Libs as a dependency to the `Forc.toml` file in your project please see the [Getting Started](../getting_started/index.md).
+In order to use the Merkle Library, the Merkle Library must be added to your `Forc.toml` file and then imported into your Sway project.
+
+To add the Merkle Library as a dependency to your `Forc.toml` file in your project, use the `forc add` command.
+
+```bash
+forc add merkle@0.26.0
+```
+
+> **NOTE:** Be sure to set the version to the latest release.
 
 To import the Binary Merkle Library to your Sway Smart Contract, add the following to your Sway file:
 
 ```sway
-use sway_libs::merkle::binary::{leaf_digest, process_proof, verify_proof};
-use sway_libs::merkle::common::{MerkleRoot, node_digest, ProofSet};
+use merkle::binary::{leaf_digest, process_proof, verify_proof};
+use merkle::common::{MerkleRoot, node_digest, ProofSet};
 ```
 
 To import the Sparse Merkle Library to your Sway Smart Contract, add the following to your Sway file:
 
 ```sway
-use sway_libs::merkle::sparse::*;
-use sway_libs::merkle::common::{MerkleRoot, ProofSet};
+use merkle::sparse::*;
+use merkle::common::{MerkleRoot, ProofSet};
 ```
 
 ## Using the Binary Merkle Proof Library In Sway
@@ -102,11 +110,7 @@ fuel-merkle = { version = "0.56.0" }
 The following should be added to your Rust file to use the Fuel-Merkle crate.
 
 ```rust
-use fuel_merkle::sparse::in_memory::MerkleTree as SparseTree;
-use fuel_merkle::sparse::proof::ExclusionLeaf as FuelExclusionLeaf;
-use fuel_merkle::sparse::proof::Proof as FuelProof;
-use fuel_merkle::sparse::MerkleTreeKey as SparseTreeKey;
-use fuels::types::{Bits256, Bytes};
+use fuel_merkle::binary::in_memory::MerkleTree;
 ```
 
 #### Using Fuel-Merkle's Binary Tree
@@ -117,14 +121,15 @@ To create a merkle tree using Fuel-Merkle is as simple as pushing your leaves in
 
 ```rust
     // Create a new Merkle Tree and define leaves
-    let mut tree = SparseTree::new();
-    let leaves = ["A", "B", "C"].to_vec();
-    let leaf_to_prove = "A";
-    let key = SparseTreeKey::new(leaf_to_prove);
+    let mut tree = MerkleTree::new();
+    let leaves = [b"A", b"B", b"C"].to_vec();
 
     // Hash the leaves and then push to the merkle tree
     for datum in &leaves {
-        let _ = tree.update(SparseTreeKey::new(datum), datum.as_bytes());
+        let mut hasher = Sha256::new();
+        hasher.update(datum);
+        let hash = hasher.finalize();
+        tree.push(&hash);
     }
 ```
 
@@ -133,31 +138,45 @@ To create a merkle tree using Fuel-Merkle is as simple as pushing your leaves in
 To generate a proof for a specific leaf, you must have the index or key of the leaf. Simply call the prove function:
 
 ```rust
-    // Get the merkle root and proof set
-    let root = tree.root();
-    let fuel_proof: FuelProof = tree.generate_proof(&key).unwrap();
+    // Define the key or index of the leaf you want to prove and the number of leaves
+    let key: u64 = 0;
 
-    // Convert the proof from a FuelProof to the Sway Proof
-    let sway_proof: Proof = fuel_to_sway_sparse_proof(fuel_proof);
+    // Get the merkle root and proof set
+    let (merkle_root, proof_set) = tree.prove(key).unwrap();
+
+    // Convert the proof set from Vec<Bytes32> to Vec<Bits256>
+    let mut bits256_proof: Vec<Bits256> = Vec::new();
+    for itterator in proof_set {
+        bits256_proof.push(Bits256(itterator));
+    }
 ```
 
 Once the proof has been generated, you may call the Sway Smart Contract's `verify_proof` function:
 
 ```rust
+    // Create the merkle leaf
+    let mut leaf_hasher = Sha256::new();
+    leaf_hasher.update(leaves[key as usize]);
+    let hashed_leaf_data = leaf_hasher.finalize();
+    let merkle_leaf = leaf_sum(&hashed_leaf_data);
+
+    // Get the number of leaves or data points
+    let num_leaves: u64 = leaves.len() as u64;
+
     // Call the Sway contract to verify the generated merkle proof
     let result: bool = contract_instance
         .methods()
         .verify(
-            Bits256(root),
-            Bits256(*key),
-            Some(Bytes(leaves[0].into())),
-            sway_proof,
+            Bits256(merkle_root),
+            key,
+            Bits256(merkle_leaf),
+            num_leaves,
+            bits256_proof,
         )
         .call()
         .await
         .unwrap()
         .value;
-
     assert!(result);
 ```
 
@@ -168,7 +187,7 @@ Once imported, using the Sparse Merkle Proof library is as simple as calling the
 - `root()`
 - `verify()`
 
-To explore additional utility and support functions available, please check out the [Sway Libs Docs](https://fuellabs.github.io/sway-libs/master/sway_libs/merkle/index.html).
+To explore additional utility and support functions available, please check out the [Sway Libs Docs](https://fuellabs.github.io/sway-libs/master/sway_libs/merkle/merkle/).
 
 ### Sparse Sway Functionality
 

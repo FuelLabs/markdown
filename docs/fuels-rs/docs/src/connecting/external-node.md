@@ -16,7 +16,7 @@ We can interact with the `Testnet` node by using the following example.
         )?;
 
         // Create the wallet
-        let wallet = WalletUnlocked::new_from_private_key(secret, Some(provider));
+        let wallet = Wallet::new(PrivateKeySigner::new(secret), provider);
 
         // Get the wallet address. Used later with the faucet
         dbg!(wallet.address().to_string());

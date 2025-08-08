@@ -267,7 +267,7 @@ Example of the SRC16 implementation where a contract utilizes the encoding schem
 ```sway
 contract;
 
-use standards::src16::{
+use src16::{
     DataEncoder,
     DomainHash,
     SRC16,
@@ -420,7 +420,7 @@ fn _get_domain_separator() -> SRC16Domain {
 ```sway
 contract;
 
-use standards::src16::{
+use src16::{
     DataEncoder,
     DomainHash,
     EIP712,

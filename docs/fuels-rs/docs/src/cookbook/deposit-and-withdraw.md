@@ -5,47 +5,29 @@ Consider the following contract:
 ```rust,ignore
 contract;
 
-use std::{
-    asset::{
-        mint_to,
-        transfer,
-    },
-    call_frames::{
-        msg_asset_id,
-    },
-    constants::ZERO_B256,
-    context::msg_amount,
-};
-
+use std::{asset::{mint_to, transfer}, call_frames::msg_asset_id, context::msg_amount};
 abi LiquidityPool {
     #[payable]
     fn deposit(recipient: Identity);
     #[payable]
     fn withdraw(recipient: Identity);
 }
-
 const BASE_TOKEN: AssetId = AssetId::from(0x9ae5b658754e096e4d681c548daf46354495a437cc61492599e33fc64dcdc30c);
-
 impl LiquidityPool for Contract {
     #[payable]
     fn deposit(recipient: Identity) {
         assert(BASE_TOKEN == msg_asset_id());
         assert(0 < msg_amount());
-
         // Mint two times the amount.
         let amount_to_mint = msg_amount() * 2;
-
         // Mint some LP token based upon the amount of the base token.
-        mint_to(recipient, ZERO_B256, amount_to_mint);
+        mint_to(recipient, b256::zero(), amount_to_mint);
     }
-
     #[payable]
     fn withdraw(recipient: Identity) {
         assert(0 < msg_amount());
-
         // Amount to withdraw.
         let amount_to_transfer = msg_amount() / 2;
-
         // Transfer base token to recipient.
         transfer(recipient, BASE_TOKEN, amount_to_transfer);
     }
@@ -92,9 +74,10 @@ Having launched a provider and created the wallet, we can deploy our contract an
             LoadConfiguration::default(),
         )?
         .deploy(wallet, TxPolicies::default())
-        .await?;
+        .await?
+        .contract_id;
 
-        let contract_methods = MyContract::new(contract_id.clone(), wallet.clone()).methods();
+        let contract_methods = MyContract::new(contract_id, wallet.clone()).methods();
 ```
 
 With the preparations out of the way, we can finally deposit to the liquidity pool by calling `deposit()` via the contract instance. Since we have to transfer assets to the contract, we create the appropriate `CallParameters` and chain them to the method call. To receive the minted liquidity pool asset, we have to append a variable output to our contract call.
@@ -116,11 +99,11 @@ With the preparations out of the way, we can finally deposit to the liquidity po
 As a final demonstration, let's use all our liquidity asset balance to withdraw from the pool and confirm we retrieved the initial amount. For this, we get our liquidity asset balance and supply it to the `withdraw()` call via `CallParameters`.
 
 ```rust,ignore
-        let lp_asset_id = contract_id.asset_id(&Bits256::zeroed());
+        let lp_asset_id = contract_id.asset_id(&SubAssetId::zeroed());
         let lp_token_balance = wallet.get_asset_balance(&lp_asset_id).await?;
 
         let call_params = CallParameters::default()
-            .with_amount(lp_token_balance)
+            .with_amount(lp_token_balance.try_into().unwrap())
             .with_asset_id(lp_asset_id);
 
         contract_methods
@@ -131,5 +114,5 @@ As a final demonstration, let's use all our liquidity asset balance to withdraw 
             .await?;
 
         let base_balance = wallet.get_asset_balance(&base_asset_id).await?;
-        assert_eq!(base_balance, deposit_amount);
+        assert_eq!(base_balance, deposit_amount as u128);
 ```

@@ -16,9 +16,9 @@ You might need to set up a test blockchain first. You can skip this step if you'
 
         // Set up our test blockchain.
 
-        // Create a random wallet (more on wallets later).
+        // Create a random signer
         // ANCHOR: setup_single_asset
-        let wallet = WalletUnlocked::new_random(None);
+        let wallet_signer = PrivateKeySigner::random(&mut rand::thread_rng());
 
         // How many coins in our wallet.
         let number_of_coins = 1;
@@ -27,7 +27,7 @@ You might need to set up a test blockchain first. You can skip this step if you'
         let amount_per_coin = 3;
 
         let coins = setup_single_asset_coins(
-            wallet.address(),
+            wallet_signer.address(),
             AssetId::zeroed(),
             number_of_coins,
             amount_per_coin,
@@ -49,7 +49,10 @@ This method returns all unspent coins (of a given asset ID) from a wallet.
 ```rust,ignore
         let consensus_parameters = provider.consensus_parameters().await?;
         let coins = provider
-            .get_coins(wallet.address(), *consensus_parameters.base_asset_id())
+            .get_coins(
+                &wallet_signer.address(),
+                *consensus_parameters.base_asset_id(),
+            )
             .await?;
         assert_eq!(coins.len(), 1);
 ```
@@ -60,9 +63,9 @@ The following example shows how to fetch resources owned by an address. First, y
 
 ```rust,ignore
 pub struct ResourceFilter {
-    pub from: Bech32Address,
+    pub from: Address,
     pub asset_id: Option<AssetId>,
-    pub amount: u64,
+    pub amount: u128,
     pub excluded_utxos: Vec<UtxoId>,
     pub excluded_message_nonces: Vec<Nonce>,
 }
@@ -72,7 +75,7 @@ The example uses default values for the asset ID and the exclusion lists. This r
 
 ```rust,ignore
         let filter = ResourceFilter {
-            from: wallet.address().clone(),
+            from: wallet_signer.address(),
             amount: 1,
             ..Default::default()
         };
@@ -85,5 +88,5 @@ The example uses default values for the asset ID and the exclusion lists. This r
 Get all the spendable balances of all assets for an address. This is different from getting the coins because we only return the numbers (the sum of UTXOs coins amount for each asset ID) and not the UTXOs coins themselves.
 
 ```rust,ignore
-        let _balances = provider.get_balances(wallet.address()).await?;
+        let _balances = provider.get_balances(&wallet_signer.address()).await?;
 ```

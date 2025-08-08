@@ -26,7 +26,8 @@ you can deploy it in segments using a partitioned approach:
         )?
         .convert_to_loader(max_words_per_blob)?
         .deploy(&wallet, TxPolicies::default())
-        .await?;
+        .await?
+        .contract_id;
 ```
 
 When you convert a standard contract into a loader contract, the following changes occur:
@@ -52,7 +53,8 @@ A helper function is available to deploy your contract normally if it is within 
             LoadConfiguration::default().with_salt(random_salt()),
         )?
         .smart_deploy(&wallet, TxPolicies::default(), max_words_per_blob)
-        .await?;
+        .await?
+        .contract_id;
 ```
 
 You also have the option to separate the blob upload from the contract deployment for more granular control:
@@ -66,7 +68,8 @@ You also have the option to separate the blob upload from the contract deploymen
         .upload_blobs(&wallet, TxPolicies::default())
         .await?
         .deploy(&wallet, TxPolicies::default())
-        .await?;
+        .await?
+        .contract_id;
 ```
 
 Alternatively, you can manually split your contract code into blobs and then create and deploy a loader:
@@ -85,7 +88,8 @@ Alternatively, you can manually split your contract code into blobs and then cre
 
         let contract_id = Contract::loader_from_blobs(blobs, random_salt(), vec![])?
             .deploy(&wallet, TxPolicies::default())
-            .await?;
+            .await?
+            .contract_id;
 ```
 
 Or you can upload the blobs yourself and proceed with just the loader deployment:
@@ -126,7 +130,8 @@ Or you can upload the blobs yourself and proceed with just the loader deployment
 
         let contract_id = Contract::loader_from_blob_ids(all_blob_ids, random_salt(), vec![])?
             .deploy(&wallet, TxPolicies::default())
-            .await?;
+            .await?
+            .contract_id;
 ```
 
 ## Blob Size Considerations

@@ -26,9 +26,8 @@ In this scenario, we have a predicate that holds some bridged asset with ID **br
         let ask_amount = 100;
         let locked_amount = 500;
         let bridged_asset_id = AssetId::from([1u8; 32]);
-        let receiver = Bech32Address::from_str(
-            "fuel1p8qt95dysmzrn2rmewntg6n6rg3l8ztueqafg5s6jmd9cgautrdslwdqdw",
-        )?;
+        let receiver =
+            Address::from_str("09c0b2d1a486c439a87bcba6b46a7a1a23f3897cc83a94521a96da5c23bc58db")?;
 ```
 
 Our goal is to create a transaction that will use our hot wallet to transfer the **ask_amount** to the **receiver** and then send the unlocked predicate assets to a second wallet that acts as our cold storage.
@@ -39,18 +38,17 @@ Let's start by instantiating a builder. Since we don't plan to deploy a contract
         let ask_amount = 100;
         let locked_amount = 500;
         let bridged_asset_id = AssetId::from([1u8; 32]);
-        let receiver = Bech32Address::from_str(
-            "fuel1p8qt95dysmzrn2rmewntg6n6rg3l8ztueqafg5s6jmd9cgautrdslwdqdw",
-        )?;
+        let receiver =
+            Address::from_str("09c0b2d1a486c439a87bcba6b46a7a1a23f3897cc83a94521a96da5c23bc58db")?;
         let tb = ScriptTransactionBuilder::default();
         let consensus_parameters = provider.consensus_parameters().await?;
         let base_inputs = hot_wallet
             .get_asset_inputs_for_amount(*consensus_parameters.base_asset_id(), ask_amount, None)
             .await?;
         let base_outputs = hot_wallet.get_asset_outputs_for_amount(
-            &receiver,
+            receiver,
             *consensus_parameters.base_asset_id(),
-            ask_amount,
+            ask_amount as u64,
         );
         let other_asset_inputs = predicate
             .get_asset_inputs_for_amount(bridged_asset_id, locked_amount, None)
@@ -76,7 +74,7 @@ Let's start by instantiating a builder. Since we don't plan to deploy a contract
         let status = provider.tx_status(&tx_id).await?;
         assert!(matches!(status, TxStatus::Success { .. }));
 
-        let balance = cold_wallet.get_asset_balance(&bridged_asset_id).await?;
+        let balance: u128 = cold_wallet.get_asset_balance(&bridged_asset_id).await?;
         assert_eq!(balance, locked_amount);
 ```
 
@@ -88,9 +86,9 @@ Next, we need to define transaction inputs of the base asset that sum up to **as
             .get_asset_inputs_for_amount(*consensus_parameters.base_asset_id(), ask_amount, None)
             .await?;
         let base_outputs = hot_wallet.get_asset_outputs_for_amount(
-            &receiver,
+            receiver,
             *consensus_parameters.base_asset_id(),
-            ask_amount,
+            ask_amount as u64,
         );
 ```
 
@@ -112,9 +110,9 @@ We combine all of the inputs and outputs and set them on the builder:
             .get_asset_inputs_for_amount(*consensus_parameters.base_asset_id(), ask_amount, None)
             .await?;
         let base_outputs = hot_wallet.get_asset_outputs_for_amount(
-            &receiver,
+            receiver,
             *consensus_parameters.base_asset_id(),
-            ask_amount,
+            ask_amount as u64,
         );
         let other_asset_inputs = predicate
             .get_asset_inputs_for_amount(bridged_asset_id, locked_amount, None)
@@ -169,7 +167,7 @@ Finally, we verify the transaction succeeded and that the cold storage indeed ho
         let status = provider.tx_status(&tx_id).await?;
         assert!(matches!(status, TxStatus::Success { .. }));
 
-        let balance = cold_wallet.get_asset_balance(&bridged_asset_id).await?;
+        let balance: u128 = cold_wallet.get_asset_balance(&bridged_asset_id).await?;
         assert_eq!(balance, locked_amount);
 ```
 

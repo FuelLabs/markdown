@@ -29,7 +29,7 @@ You can also use the test helper `setup_test_provider()` for this:
         let provider = setup_test_provider(vec![], vec![], None, None).await?;
 
         // Create the wallet.
-        let _wallet = WalletUnlocked::new_random(Some(provider));
+        let _wallet = Wallet::random(&mut thread_rng(), provider);
 ```
 
 You can also use `launch_provider_and_get_wallet()`, which abstracts away the `setup_test_provider()` and the wallet creation, all in one single method:
@@ -45,7 +45,7 @@ let wallet = launch_provider_and_get_wallet().await?;
 The `fuel-core-lib` feature allows us to run a `fuel-core` node without installing the `fuel-core` binary on the local machine. Using the `fuel-core-lib` feature flag entails downloading all the dependencies needed to run the fuel-core node.
 
 ```rust,ignore
-fuels = { version = "0.70.1", features = ["fuel-core-lib"] }
+fuels = { version = "0.74.0", features = ["fuel-core-lib"] }
 ```
 
 ### RocksDB
@@ -53,5 +53,5 @@ fuels = { version = "0.70.1", features = ["fuel-core-lib"] }
 The `rocksdb` is an additional feature that, when combined with `fuel-core-lib`, provides persistent storage capabilities while using `fuel-core` as a library.
 
 ```rust,ignore
-fuels = { version = "0.70.1", features = ["rocksdb"] }
+fuels = { version = "0.74.0", features = ["rocksdb"] }
 ```

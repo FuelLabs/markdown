@@ -28,7 +28,8 @@ First, the `Contract::load_from` function is used to load a contract binary with
             LoadConfiguration::default(),
         )?
         .deploy(&wallet, TxPolicies::default())
-        .await?;
+        .await?
+        .contract_id;
 
         println!("Contract deployed @ {contract_id}");
         setup_program_test!(
@@ -66,7 +67,7 @@ Additionally, you can set custom `TxParameters` when deploying the loaded contra
 ```rust,ignore
         // Optional: Add `Salt`
         let rng = &mut StdRng::seed_from_u64(2322u64);
-        let salt: [u8; 32] = rng.gen();
+        let salt: [u8; 32] = rng.r#gen();
 
         // Optional: Configure storage
         let key = Bytes32::from([1u8; 32]);
@@ -82,14 +83,16 @@ Additionally, you can set custom `TxParameters` when deploying the loaded contra
         let tx_policies = TxPolicies::default()
             .with_tip(1)
             .with_script_gas_limit(1_000_000)
-            .with_maturity(0);
+            .with_maturity(0)
+            .with_expiration(10_000);
 
         let contract_id_2 = Contract::load_from(
             "../../e2e/sway/contracts/contract_test/out/release/contract_test.bin",
             configuration,
         )?
         .deploy(&wallet, tx_policies)
-        .await?;
+        .await?
+        .contract_id;
 
         println!("Contract deployed @ {contract_id_2}");
 ```
